@@ -1,0 +1,23 @@
+{
+  "name": "spiritsmanagement-api",
+  "version": "0.1.0",
+  "description": "Création d'une api pour a terme créer une appli de gestion de favoris de spiritueux, dont whisky en priorité.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AnthonyMarcelin/SpiritsManagement-API"
+  },
+  "keywords": [],
+  "author": "Anthony Marcelin",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "sequelize": "^6.37.5",
+    "zod": "^3.24.2"
+  }
+}
