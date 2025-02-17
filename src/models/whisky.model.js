@@ -1,10 +1,10 @@
 import sequelize from "../database/client.js";
 import { DataTypes, Model } from "sequelize";
 
+
 export default class Whisky extends Model {}
 
-Whisky.init(
-  {
+Whisky.init({
     name: {
       type: DataTypes.STRING,
       allowNull: false,

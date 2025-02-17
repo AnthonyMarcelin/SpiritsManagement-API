@@ -3,8 +3,7 @@ import { DataTypes, Model } from "sequelize";
 
 export default class Rhum extends Model {}
 
-Rhum.init(
-  {
+Rhum.init({
     name: {
       type: DataTypes.STRING,
       allowNull: false,

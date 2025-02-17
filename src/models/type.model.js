@@ -3,8 +3,7 @@ import { DataTypes, Model } from "sequelize";
 
 export default class Type extends Model {}
 
-Type.init(
-  {
+Type.init({
     name: {
       type: DataTypes.STRING,
       allowNull: false,

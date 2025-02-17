@@ -3,8 +3,7 @@ import { DataTypes, Model } from "sequelize";
 
 export default class Beer extends Model {}
 
-Beer.init(
-  {
+Beer.init({
     name: {
       type: DataTypes.STRING,
       allowNull: false,
