@@ -17,10 +17,10 @@ Whisky.init({
         type: DataTypes.TEXT,
         allowNull: true,
     },
-    type: {
-        type: DataTypes.CHAR,
-        allowNull: false,
-    },
+    // type: {
+    //     type: DataTypes.CHAR,
+    //     allowNull: false,
+    // },
     price: {
         type: DataTypes.NUMBER,
         allowNull: false,

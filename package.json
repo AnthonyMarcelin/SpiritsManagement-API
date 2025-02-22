@@ -7,7 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node --watch index.js",
-    "db:create": " node src/migrations/01.createTables.js"
+    "db:create": " node src/migrations/01.createTables.js",
+    "db:create_test": " node src/migrations/01.createTables_test.js"
   },
   "repository": {
     "type": "git",

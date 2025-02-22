@@ -6,9 +6,7 @@ import Label from "./label.model.js";
 import Supplier from "./supplier.model.js";
 // import Type from "./type.model.js";
 
-
 // whisky - label
-
 Label.hasMany(Whisky, {
     foreignKey: {
         name: "label_id",
@@ -19,11 +17,10 @@ Label.hasMany(Whisky, {
 
 Whisky.belongsTo(Label, {
     foreignKey: "label_id",
-    as: "labels",
+    as: "label",
 });
 
 // rhum - label
-
 Label.hasMany(Rhum, {
     foreignKey: {
         name: "label_id",
@@ -34,11 +31,10 @@ Label.hasMany(Rhum, {
 
 Rhum.belongsTo(Label, {
     foreignKey: "label_id",
-    as: "labels",
+    as: "label",
 });
 
 // beer - label
-
 Label.hasMany(Beer, {
     foreignKey: {
         name: "label_id",
@@ -49,12 +45,10 @@ Label.hasMany(Beer, {
 
 Beer.belongsTo(Label, {
     foreignKey: "label_id",
-    as: "labels",
+    as: "label",
 });
 
-
-// whisky - type
-
+// // whisky - type
 // Type.hasMany(Whisky, {
 //     foreignKey: {
 //         name: "type_id",
@@ -65,11 +59,10 @@ Beer.belongsTo(Label, {
 
 // Whisky.belongsTo(Type, {
 //     foreignKey: "type_id",
-//     as: "types",
+//     as: "type",
 // });
 
 // // rhum - type
-
 // Type.hasMany(Rhum, {
 //     foreignKey: {
 //         name: "type_id",
@@ -80,11 +73,10 @@ Beer.belongsTo(Label, {
 
 // Rhum.belongsTo(Type, {
 //     foreignKey: "type_id",
-//     as: "types",
+//     as: "type",
 // });
 
 // // beer - type
-
 // Type.hasMany(Beer, {
 //     foreignKey: {
 //         name: "type_id",
@@ -93,13 +85,12 @@ Beer.belongsTo(Label, {
 //     as: "beers",
 // });
 
-// Whisky.belongsTo(Type, {
+// Beer.belongsTo(Type, {
 //     foreignKey: "type_id",
-//     as: "types",
+//     as: "type",
 // });
 
 // whisky - supplier
-
 Supplier.hasMany(Whisky, {
     foreignKey: {
         name: "supplier_id",
@@ -108,13 +99,12 @@ Supplier.hasMany(Whisky, {
     as: "whiskies",
 });
 
-Whisky.belongsToMany(Supplier, {
+Whisky.belongsTo(Supplier, {
     foreignKey: "supplier_id",
-    as: "suppliers",
+    as: "supplier",
 });
 
 // rhum - supplier
-
 Supplier.hasMany(Rhum, {
     foreignKey: {
         name: "supplier_id",
@@ -123,13 +113,12 @@ Supplier.hasMany(Rhum, {
     as: "rhums",
 });
 
-Rhum.belongsToMany(Supplier, {
+Rhum.belongsTo(Supplier, {
     foreignKey: "supplier_id",
-    as: "rhums",
+    as: "supplier",
 });
 
 // beer - supplier
-
 Supplier.hasMany(Beer, {
     foreignKey: {
         name: "supplier_id",
@@ -138,9 +127,9 @@ Supplier.hasMany(Beer, {
     as: "beers",
 });
 
-Beer.belongsToMany(Supplier, {
+Beer.belongsTo(Supplier, {
     foreignKey: "supplier_id",
-    as: "suppliers",
+    as: "supplier",
 });
 
-export { sequelize, Whisky, Beer, Rhum, Label, Supplier};
+export { sequelize, Whisky, Beer, Rhum, Label, Supplier };
