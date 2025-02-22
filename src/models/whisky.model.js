@@ -19,11 +19,11 @@ Whisky.init({
     },
     gender: {
         type: DataTypes.CHAR,
-        allowNull: false,
+        allowNull: true, // mettre en false
     },
     nature: {
         type: DataTypes.CHAR,
-        allowNull: false,
+        allowNull: true, // mettre en false
     },
     price: {
         type: DataTypes.DECIMAL(10, 2),
@@ -32,6 +32,10 @@ Whisky.init({
     photo: {
         type: DataTypes.STRING,
         allowNull: true,
+    },
+    origin: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {

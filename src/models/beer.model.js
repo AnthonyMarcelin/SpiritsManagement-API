@@ -28,6 +28,10 @@ Beer.init({
         type: DataTypes.STRING,
         allowNull: true,
     },
+    origin: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     sequelize,

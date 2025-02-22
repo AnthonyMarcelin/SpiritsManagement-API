@@ -1,0 +1,1 @@
+import {Origin, Supplier, Label, Nature, Gender } from '../models/associations.js';

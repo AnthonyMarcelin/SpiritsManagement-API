@@ -6,6 +6,7 @@ import Label from "./label.model.js";
 import Supplier from "./supplier.model.js";
 import Gender from "./gender.model.js";
 import Nature from "./nature.model.js";
+import Origin from "./origin.model.js";
 
 
 // whisky - label
@@ -53,6 +54,50 @@ Beer.belongsTo(Label, {
     as: "labels",
 });
 
+// whisky - origin
+
+Origin.hasMany(Whisky, {
+    foreignKey: {
+        name: "origin_id",
+        allowNull: false,
+    },
+    as: "whiskies",
+});
+
+Whisky.belongsTo(Origin, {
+    foreignKey: "origin_id",
+    as: "origins",
+});
+
+// rhum - origin
+
+Origin.hasMany(Rhum, {
+    foreignKey: {
+        name: "origin_id",
+        allowNull: false,
+    },
+    as: "rhums",
+});
+
+Rhum.belongsTo(Origin, {
+    foreignKey: "origin_id",
+    as: "origins",
+});
+
+// beer - origin
+
+Origin.hasMany(Beer, {
+    foreignKey: {
+        name: "origin_id",
+        allowNull: false,
+    },
+    as: "beers",
+});
+
+Beer.belongsTo(Origin, {
+    foreignKey: "origin_id",
+    as: "origins",
+});
 
 // whisky - gender
 
@@ -159,4 +204,4 @@ Whisky.belongsTo(Nature, {
     as: "natures",
 });
 
-export { sequelize, Whisky, Beer, Rhum, Gender, Nature, Label, Supplier};
+export { sequelize, Whisky, Beer, Rhum, Gender, Nature, Label, Supplier, Origin};

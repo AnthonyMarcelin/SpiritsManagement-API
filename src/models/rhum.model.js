@@ -28,6 +28,10 @@ Rhum.init({
         type: DataTypes.STRING,
         allowNull: true,
     },
+    origin: {
+      type: DataTypes.CHAR,
+      allowNull: false,
+    },
   },
   {
     sequelize,
