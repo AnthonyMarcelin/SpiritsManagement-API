@@ -1,9 +1,9 @@
-import sequelize from "../database/client.js";
+import sequelize from "../database/pg.js";
 import { DataTypes, Model } from "sequelize";
 
-export default class Type extends Model {}
+export default class Nature extends Model {}
 
-Type.init({
+Nature.init({
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -11,6 +11,6 @@ Type.init({
   },
   {
     sequelize,
-    tableName: "type",
+    tableName: "nature",
   }
 );

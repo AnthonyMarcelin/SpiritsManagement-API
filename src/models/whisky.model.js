@@ -1,4 +1,4 @@
-import sequelize from "../database/client.js";
+import sequelize from "../database/pg.js";
 import { DataTypes, Model } from "sequelize";
 
 
@@ -17,12 +17,16 @@ Whisky.init({
         type: DataTypes.TEXT,
         allowNull: true,
     },
-    // type: {
-    //     type: DataTypes.CHAR,
-    //     allowNull: false,
-    // },
+    gender: {
+        type: DataTypes.CHAR,
+        allowNull: false,
+    },
+    nature: {
+        type: DataTypes.CHAR,
+        allowNull: false,
+    },
     price: {
-        type: DataTypes.NUMBER,
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
     },
     photo: {

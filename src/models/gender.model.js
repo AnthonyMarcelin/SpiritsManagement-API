@@ -1,20 +1,16 @@
 import sequelize from "../database/pg.js";
 import { DataTypes, Model } from "sequelize";
 
-export default class Label extends Model {}
+export default class Gender extends Model {}
 
-Label.init({
+Gender.init({
     name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    color: {
       type: DataTypes.STRING,
       allowNull: false,
     },
   },
   {
     sequelize,
-    tableName: "label",
+    tableName: "gender",
   }
 );

@@ -4,7 +4,8 @@ import Rhum from "./rhum.model.js";
 import Beer from "./beer.model.js";
 import Label from "./label.model.js";
 import Supplier from "./supplier.model.js";
-// import Type from "./type.model.js";
+import Gender from "./gender.model.js";
+import Nature from "./nature.model.js";
 
 
 // whisky - label
@@ -53,50 +54,50 @@ Beer.belongsTo(Label, {
 });
 
 
-// whisky - type
+// whisky - gender
 
-// Type.hasMany(Whisky, {
-//     foreignKey: {
-//         name: "type_id",
-//         allowNull: false,
-//     },
-//     as: "whiskies",
-// });
+Gender.hasMany(Whisky, {
+    foreignKey: {
+        name: "gender_id",
+        allowNull: false,
+    },
+    as: "whiskies",
+});
 
-// Whisky.belongsTo(Type, {
-//     foreignKey: "type_id",
-//     as: "types",
-// });
+Whisky.belongsTo(Gender, {
+    foreignKey: "gender_id",
+    as: "genders",
+});
 
-// // rhum - type
+// rhum - gender
 
-// Type.hasMany(Rhum, {
-//     foreignKey: {
-//         name: "type_id",
-//         allowNull: false,
-//     },
-//     as: "rhums",
-// });
+Gender.hasMany(Rhum, {
+    foreignKey: {
+        name: "gender_id",
+        allowNull: false,
+    },
+    as: "rhums",
+});
 
-// Rhum.belongsTo(Type, {
-//     foreignKey: "type_id",
-//     as: "types",
-// });
+Rhum.belongsTo(Gender, {
+    foreignKey: "gender_id",
+    as: "genders",
+});
 
-// // beer - type
+// beer - gender
 
-// Type.hasMany(Beer, {
-//     foreignKey: {
-//         name: "type_id",
-//         allowNull: false,
-//     },
-//     as: "beers",
-// });
+Gender.hasMany(Beer, {
+    foreignKey: {
+        name: "gender_id",
+        allowNull: false,
+    },
+    as: "beers",
+});
 
-// Whisky.belongsTo(Type, {
-//     foreignKey: "type_id",
-//     as: "types",
-// });
+Beer.belongsTo(Gender, {
+    foreignKey: "gender_id",
+    as: "genders",
+});
 
 // whisky - supplier
 
@@ -108,7 +109,7 @@ Supplier.hasMany(Whisky, {
     as: "whiskies",
 });
 
-Whisky.belongsToMany(Supplier, {
+Whisky.belongsTo(Supplier, {
     foreignKey: "supplier_id",
     as: "suppliers",
 });
@@ -123,7 +124,7 @@ Supplier.hasMany(Rhum, {
     as: "rhums",
 });
 
-Rhum.belongsToMany(Supplier, {
+Rhum.belongsTo(Supplier, {
     foreignKey: "supplier_id",
     as: "rhums",
 });
@@ -138,9 +139,24 @@ Supplier.hasMany(Beer, {
     as: "beers",
 });
 
-Beer.belongsToMany(Supplier, {
+Beer.belongsTo(Supplier, {
     foreignKey: "supplier_id",
     as: "suppliers",
 });
 
-export { sequelize, Whisky, Beer, Rhum, Label, Supplier};
+// whisky - nature
+
+Nature.hasMany(Whisky, {
+    foreignKey: {
+        name: "nature_id",
+        allowNull: false,
+    },
+    as: "whiskies",
+});
+
+Whisky.belongsTo(Nature, {
+    foreignKey: "nature_id",
+    as: "natures",
+});
+
+export { sequelize, Whisky, Beer, Rhum, Gender, Nature, Label, Supplier};

@@ -1,4 +1,4 @@
-import { Whisky, Rhum, Beer, Label, Supplier, sequelize } from "../models/associations.js";
+import { Whisky, Rhum, Beer, Label, Supplier, Gender, Nature, sequelize } from "../models/associations.js";
 
 console.log("suppresion tables existantes...");
 await sequelize.drop({cascade: true});

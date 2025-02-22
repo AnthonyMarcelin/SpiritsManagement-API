@@ -1,4 +1,4 @@
-import sequelize from "../database/client.js";
+import sequelize from "../database/pg.js";
 import { DataTypes, Model } from "sequelize";
 
 export default class Rhum extends Model {}
@@ -16,12 +16,12 @@ Rhum.init({
         type: DataTypes.TEXT,
         allowNull: true,
     },
-    type: {
+    gender: {
         type: DataTypes.CHAR,
         allowNull: false,
     },
     price: {
-        type: DataTypes.NUMBER,
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
     },
     photo: {
