@@ -10,6 +10,8 @@ const rhumController = {
                 return res.status(400).json({ message: "Aucun rhum disponible" });
             }
 
+            res.status(200).json(rhum);
+
         } catch (error) {
             res.status(500).json({ error: "Internal Server Error" });
         }
