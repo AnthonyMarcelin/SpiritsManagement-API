@@ -1,4 +1,4 @@
-import sequelize from "../database/pg.js";
+import sequelize from "../database/client.js";
 import Whisky from "./whisky.model.js";
 import Rhum from "./rhum.model.js";
 import Beer from "./beer.model.js";
