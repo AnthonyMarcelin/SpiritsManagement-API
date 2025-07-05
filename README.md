@@ -1,17 +1,16 @@
 # Spirits-API
 
-Création d'une api pour a terme créer une appli de gestion de favoris de spiritueux, dont whisky en priorité.
-
+Création d'une api pour à terme créer une appli de gestion de favoris de spiritueux, dont whisky en priorité.
 
 ## Pour le whisky
 
-- Gender = tourbé, non tourbé etc
-- Nature = single malt, blended, etc
+- PeatLevel = tourbé, non tourbé etc
+- Type = single malt, blended, etc
 
 ## Pour la bière
 
-- Gender = Brune, blonde etc
+- Type = Brune, blonde etc
 
 ## Pour le rhum
 
-- Gender = blanc, ambré, arrangé etc
+- Type = blanc, ambré, arrangé etc

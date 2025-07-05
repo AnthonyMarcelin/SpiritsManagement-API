@@ -1,10 +1,10 @@
 import sequelize from "../database/client.js";
 import { DataTypes, Model } from "sequelize";
 
-
 export default class Whisky extends Model {}
 
-Whisky.init({
+Whisky.init(
+  {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -14,32 +14,40 @@ Whisky.init({
       allowNull: true,
     },
     review: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-    },
-    gender: {
-        type: DataTypes.CHAR,
-        allowNull: true, // mettre en false
-    },
-    nature: {
-        type: DataTypes.CHAR,
-        allowNull: true, // mettre en false
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     price: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
     },
     photo: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
-    origin: {
       type: DataTypes.STRING,
+      allowNull: true,
+    },
+    label_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    origin_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    supplier_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    gender_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    nature_id: {
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
   },
   {
     sequelize,
     tableName: "whisky",
-  }
+  },
 );

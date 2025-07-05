@@ -3,7 +3,8 @@ import { DataTypes, Model } from "sequelize";
 
 export default class Beer extends Model {}
 
-Beer.init({
+Beer.init(
+  {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -13,22 +14,14 @@ Beer.init({
       allowNull: true,
     },
     review: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-    },
-    gender: {
-        type: DataTypes.CHAR,
-        allowNull: false,
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     price: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
     },
     photo: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
-    origin: {
       type: DataTypes.STRING,
       allowNull: true,
     },
@@ -36,5 +29,5 @@ Beer.init({
   {
     sequelize,
     tableName: "beer",
-  }
+  },
 );

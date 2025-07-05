@@ -4,204 +4,166 @@ import Rhum from "./rhum.model.js";
 import Beer from "./beer.model.js";
 import Label from "./label.model.js";
 import Supplier from "./supplier.model.js";
-import Gender from "./gender.model.js";
-import Nature from "./nature.model.js";
+import PeatLevel from "./peatLevel.model.js";
+import Type from "./type.model.js";
 import Origin from "./origin.model.js";
 
-
-// whisky - label
+// Associations centralisées
 
 Label.hasMany(Whisky, {
-    foreignKey: {
-        name: "label_id",
-        allowNull: false,
-    },
-    as: "whiskies",
+  foreignKey: {
+    name: "label_id",
+    allowNull: false,
+  },
+  as: "whiskies",
 });
-
 Whisky.belongsTo(Label, {
-    foreignKey: "label_id",
-    as: "labels",
+  foreignKey: "label_id",
+  as: "label",
 });
-
-// rhum - label
-
 Label.hasMany(Rhum, {
-    foreignKey: {
-        name: "label_id",
-        allowNull: false,
-    },
-    as: "rhums",
+  foreignKey: {
+    name: "label_id",
+    allowNull: false,
+  },
+  as: "rhums",
 });
-
 Rhum.belongsTo(Label, {
-    foreignKey: "label_id",
-    as: "labels",
+  foreignKey: "label_id",
+  as: "label",
 });
-
-// beer - label
-
 Label.hasMany(Beer, {
-    foreignKey: {
-        name: "label_id",
-        allowNull: false,
-    },
-    as: "beers",
+  foreignKey: {
+    name: "label_id",
+    allowNull: false,
+  },
+  as: "beers",
 });
-
 Beer.belongsTo(Label, {
-    foreignKey: "label_id",
-    as: "labels",
+  foreignKey: "label_id",
+  as: "label",
 });
-
-// whisky - origin
-
 Origin.hasMany(Whisky, {
-    foreignKey: {
-        name: "origin_id",
-        allowNull: false,
-    },
-    as: "whiskies",
+  foreignKey: {
+    name: "origin_id",
+    allowNull: false,
+  },
+  as: "whiskies",
 });
-
 Whisky.belongsTo(Origin, {
-    foreignKey: "origin_id",
-    as: "origins",
+  foreignKey: "origin_id",
+  as: "origin",
 });
-
-// rhum - origin
-
 Origin.hasMany(Rhum, {
-    foreignKey: {
-        name: "origin_id",
-        allowNull: false,
-    },
-    as: "rhums",
+  foreignKey: {
+    name: "origin_id",
+    allowNull: false,
+  },
+  as: "rhums",
 });
-
 Rhum.belongsTo(Origin, {
-    foreignKey: "origin_id",
-    as: "origins",
+  foreignKey: "origin_id",
+  as: "origin",
 });
-
-// beer - origin
-
 Origin.hasMany(Beer, {
-    foreignKey: {
-        name: "origin_id",
-        allowNull: false,
-    },
-    as: "beers",
+  foreignKey: {
+    name: "origin_id",
+    allowNull: false,
+  },
+  as: "beers",
 });
-
 Beer.belongsTo(Origin, {
-    foreignKey: "origin_id",
-    as: "origins",
+  foreignKey: "origin_id",
+  as: "origin",
 });
-
-// whisky - gender
-
-Gender.hasMany(Whisky, {
-    foreignKey: {
-        name: "gender_id",
-        allowNull: false,
-    },
-    as: "whiskies",
+// --- PEAT LEVEL UNIQUEMENT POUR WHISKY ---
+PeatLevel.hasMany(Whisky, {
+  foreignKey: {
+    name: "peat_level_id",
+    allowNull: true,
+  },
+  as: "whiskies",
 });
-
-Whisky.belongsTo(Gender, {
-    foreignKey: "gender_id",
-    as: "genders",
+Whisky.belongsTo(PeatLevel, {
+  foreignKey: "peat_level_id",
+  as: "peat_level",
 });
-
-// rhum - gender
-
-Gender.hasMany(Rhum, {
-    foreignKey: {
-        name: "gender_id",
-        allowNull: false,
-    },
-    as: "rhums",
+// --- TYPE POUR TOUS MAIS FILTRAGE PAR for_whisky, for_rhum, for_beer ---
+Type.hasMany(Whisky, {
+  foreignKey: {
+    name: "type_id",
+    allowNull: false,
+  },
+  as: "whiskies",
 });
-
-Rhum.belongsTo(Gender, {
-    foreignKey: "gender_id",
-    as: "genders",
+Whisky.belongsTo(Type, {
+  foreignKey: "type_id",
+  as: "type",
 });
-
-// beer - gender
-
-Gender.hasMany(Beer, {
-    foreignKey: {
-        name: "gender_id",
-        allowNull: false,
-    },
-    as: "beers",
+Type.hasMany(Rhum, {
+  foreignKey: {
+    name: "type_id",
+    allowNull: false,
+  },
+  as: "rhums",
 });
-
-Beer.belongsTo(Gender, {
-    foreignKey: "gender_id",
-    as: "genders",
+Rhum.belongsTo(Type, {
+  foreignKey: "type_id",
+  as: "type",
 });
-
-// whisky - supplier
-
+Type.hasMany(Beer, {
+  foreignKey: {
+    name: "type_id",
+    allowNull: false,
+  },
+  as: "beers",
+});
+Beer.belongsTo(Type, {
+  foreignKey: "type_id",
+  as: "type",
+});
 Supplier.hasMany(Whisky, {
-    foreignKey: {
-        name: "supplier_id",
-        allowNull: false,
-    },
-    as: "whiskies",
+  foreignKey: {
+    name: "supplier_id",
+    allowNull: false,
+  },
+  as: "whiskies",
 });
-
 Whisky.belongsTo(Supplier, {
-    foreignKey: "supplier_id",
-    as: "suppliers",
+  foreignKey: "supplier_id",
+  as: "supplier",
 });
-
-// rhum - supplier
-
 Supplier.hasMany(Rhum, {
-    foreignKey: {
-        name: "supplier_id",
-        allowNull: false,
-    },
-    as: "rhums",
+  foreignKey: {
+    name: "supplier_id",
+    allowNull: false,
+  },
+  as: "rhums",
 });
-
 Rhum.belongsTo(Supplier, {
-    foreignKey: "supplier_id",
-    as: "rhums",
+  foreignKey: "supplier_id",
+  as: "supplier",
 });
-
-// beer - supplier
-
 Supplier.hasMany(Beer, {
-    foreignKey: {
-        name: "supplier_id",
-        allowNull: false,
-    },
-    as: "beers",
+  foreignKey: {
+    name: "supplier_id",
+    allowNull: false,
+  },
+  as: "beers",
 });
-
 Beer.belongsTo(Supplier, {
-    foreignKey: "supplier_id",
-    as: "suppliers",
+  foreignKey: "supplier_id",
+  as: "supplier",
 });
 
-// whisky - nature
-
-Nature.hasMany(Whisky, {
-    foreignKey: {
-        name: "nature_id",
-        allowNull: false,
-    },
-    as: "whiskies",
-});
-
-Whisky.belongsTo(Nature, {
-    foreignKey: "nature_id",
-    as: "natures",
-});
-
-export { sequelize, Whisky, Beer, Rhum, Gender, Nature, Label, Supplier, Origin};
+export {
+  sequelize,
+  Whisky,
+  Beer,
+  Rhum,
+  PeatLevel,
+  Type,
+  Label,
+  Supplier,
+  Origin,
+};

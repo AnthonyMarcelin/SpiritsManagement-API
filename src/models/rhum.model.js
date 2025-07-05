@@ -3,7 +3,8 @@ import { DataTypes, Model } from "sequelize";
 
 export default class Rhum extends Model {}
 
-Rhum.init({
+Rhum.init(
+  {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -13,28 +14,20 @@ Rhum.init({
       allowNull: true,
     },
     review: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-    },
-    gender: {
-        type: DataTypes.CHAR,
-        allowNull: false,
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     price: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
     },
     photo: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
-    origin: {
-      type: DataTypes.CHAR,
-      allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {
     sequelize,
     tableName: "rhum",
-  }
+  },
 );
