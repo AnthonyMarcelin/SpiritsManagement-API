@@ -42,7 +42,7 @@ const typeController = {
       res.status(400).json({ error: err.message });
     }
   },
-  removeType: async (req, res) => {
+  deleteType: async (req, res) => {
     try {
       const type = await Type.findByPk(req.params.id);
       if (!type) return res.status(404).json({ error: "Not found" });

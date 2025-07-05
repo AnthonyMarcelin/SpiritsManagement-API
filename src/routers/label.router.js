@@ -1,5 +1,5 @@
-import express from 'express';
-import labelController from '../controllers/label.controller.js';
+import express from "express";
+import labelController from "../controllers/label.controller.js";
 
 const labelRouter = express.Router();
 

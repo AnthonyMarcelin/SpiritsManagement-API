@@ -16,14 +16,25 @@ const beerController = {
     }
   },
 
-  getBeerById: async (req, res) => {},
+  getBeerById: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const beer = await Beer.findByPk(id);
+      if (!beer) {
+        return res.status(404).json({ error: "Bière non trouvée" });
+      }
+      res.status(200).json(beer);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
 
   createBeer: async (req, res) => {
     try {
       const { name, description, review, gender, price, photo, origin } =
         req.body;
 
-      const newBeer = await beer.create({
+      const newBeer = await Beer.create({
         name,
         description,
         review,
@@ -34,6 +45,34 @@ const beerController = {
       });
 
       res.status(201).json(newBeer);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
+
+  updateBeer: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const beer = await Beer.findByPk(id);
+      if (!beer) {
+        return res.status(404).json({ error: "Bière non trouvée" });
+      }
+      await beer.update(req.body);
+      res.status(200).json(beer);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
+
+  deleteBeer: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const beer = await Beer.findByPk(id);
+      if (!beer) {
+        return res.status(404).json({ error: "Bière non trouvée" });
+      }
+      await beer.destroy();
+      res.status(204).end();
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

@@ -7,6 +7,7 @@ import Supplier from "./supplier.model.js";
 import PeatLevel from "./peatLevel.model.js";
 import Type from "./type.model.js";
 import Origin from "./origin.model.js";
+import User from "./user.model.js";
 
 // Associations centralisées
 
@@ -155,6 +156,15 @@ Beer.belongsTo(Supplier, {
   foreignKey: "supplier_id",
   as: "supplier",
 });
+// Associations User - Alcools (chaque alcool appartient à un user)
+User.hasMany(Whisky, { foreignKey: "userId", as: "whiskies" });
+Whisky.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+User.hasMany(Rhum, { foreignKey: "userId", as: "rhums" });
+Rhum.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+User.hasMany(Beer, { foreignKey: "userId", as: "beers" });
+Beer.belongsTo(User, { foreignKey: "userId", as: "user" });
 
 export {
   sequelize,
@@ -166,4 +176,5 @@ export {
   Label,
   Supplier,
   Origin,
+  User,
 };

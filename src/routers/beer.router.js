@@ -32,5 +32,7 @@ beerRouter.get("/types", getBeerTypes);
 
 // Nouvelle route POST avec upload de photo
 beerRouter.post("/", upload.single("photo"), beerController.createBeer);
+beerRouter.put("/:id", beerController.updateBeer);
+beerRouter.delete("/:id", beerController.deleteBeer);
 
 export default beerRouter;

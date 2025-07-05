@@ -36,7 +36,7 @@ const peatLevelController = {
       res.status(400).json({ error: err.message });
     }
   },
-  removePeatLevel: async (req, res) => {
+  deletePeatLevel: async (req, res) => {
     try {
       const peatLevel = await PeatLevel.findByPk(req.params.id);
       if (!peatLevel) return res.status(404).json({ error: "Not found" });
