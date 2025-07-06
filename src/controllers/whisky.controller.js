@@ -5,33 +5,43 @@ const whiskyController = {
   getAllWhisky: async (req, res) => {
     try {
       const whisky = await Whisky.findAll();
-
       if (!whisky) {
         return res.status(400).json({ message: "Aucun whisky disponible" });
       }
-
-      res.status(200).json(whisky);
+      return res.status(200).json(whisky);
     } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
+      return res.status(500).json({ error: error.message });
     }
   },
 
-  getWhiskyById: async (req, res) => {},
+  getWhiskyById: async (req, res) => {
+    try {
+      const whisky = await Whisky.findByPk(req.params.id);
+      if (!whisky) {
+        return res.status(404).json({ error: "whisky non trouvé" });
+      }
+      return res.status(200).json(whisky);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  },
 
   createWhisky: async (req, res) => {
     try {
-      console.log("BODY:", req.body);
       const {
         name,
         description,
         review,
         price,
-        label_id,
-        origin_id,
-        supplier_id,
-        peat_level_id,
-        type_id,
+        labelId,
+        originId,
+        supplierId,
+        peatLevelId,
+        typeId,
       } = req.body;
+      if (!name || !description || !price || !labelId || !originId || !supplierId || !peatLevelId || !typeId) {
+        return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'un whisky." });
+      }
       let photoPath = null;
       if (req.file) {
         photoPath = req.file.path;
@@ -41,18 +51,57 @@ const whiskyController = {
         description,
         review,
         price,
-        label_id,
-        origin_id,
-        supplier_id,
-        peat_level_id,
-        type_id,
+        labelId,
+        originId,
+        supplierId,
+        peatLevelId,
+        typeId,
         photo: photoPath,
       });
-
-      res.status(201).json(newWhisky);
+      return res.status(201).json(newWhisky);
     } catch (error) {
-      console.error(error); // Affiche l'erreur complète dans la console
-      res.status(500).json({ error: "Internal Server Error" });
+      console.error(error);
+      return res.status(500).json({ error: error.message });
+    }
+  },
+
+  updateWhisky: async (req, res) => {
+    try {
+      const whisky = await Whisky.findByPk(req.params.id);
+      if (!whisky) {
+        return res.status(404).json({ error: "Whisky non trouvé" });
+      }
+      const {
+        name,
+        description,
+        review,
+        price,
+        labelId,
+        originId,
+        supplierId,
+        peatLevelId,
+        typeId,
+      } = req.body;
+      const updateData = {};
+      if (typeof name !== 'undefined') updateData.name = name;
+      if (typeof description !== 'undefined') updateData.description = description;
+      if (typeof review !== 'undefined') updateData.review = review;
+      if (typeof price !== 'undefined') updateData.price = price;
+      if (typeof labelId !== 'undefined') updateData.labelId = labelId;
+      if (typeof originId !== 'undefined') updateData.originId = originId;
+      if (typeof supplierId !== 'undefined') updateData.supplierId = supplierId;
+      if (typeof peatLevelId !== 'undefined') updateData.peatLevelId = peatLevelId;
+      if (typeof typeId !== 'undefined') updateData.typeId = typeId;
+      if (req.file) {
+        updateData.photo = req.file.path;
+      }
+      if (Object.keys(updateData).length === 0) {
+        return res.status(400).json({ error: "Aucune donnée à mettre à jour." });
+      }
+      await whisky.update(updateData);
+      return res.status(200).json(whisky);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
     }
   },
 
@@ -65,7 +114,19 @@ const whiskyController = {
       res.status(500).json({ error: err.message });
     }
   },
+
+  deleteWhisky: async (req, res) => {
+    try {
+      const whisky = await Whisky.findByPk(req.params.id);
+      if (!whisky) {
+        return res.status(404).json({ error: "Whisky non trouvé" });
+      }
+      await whisky.destroy();
+      return res.status(204).end();
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  },
 };
 
-export const getWhiskyTypes = whiskyController.getWhiskyTypes;
 export default whiskyController;

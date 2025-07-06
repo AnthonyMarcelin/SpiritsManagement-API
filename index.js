@@ -9,6 +9,7 @@ import typeRouter from "./src/routers/type.router.js";
 import labelRouter from "./src/routers/label.router.js";
 import originRouter from "./src/routers/origin.router.js";
 import supplierRouter from "./src/routers/supplier.router.js";
+import userRouter from "./src/routers/user.router.js";
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use("/api/type", typeRouter);
 app.use("/api/label", labelRouter);
 app.use("/api/origin", originRouter);
 app.use("/api/supplier", supplierRouter);
+app.use("/api/user", userRouter);
 
 app.listen(process.env.PORT, () => {
   console.log(`Serveur lançé sur le port ${process.env.PORT}`);

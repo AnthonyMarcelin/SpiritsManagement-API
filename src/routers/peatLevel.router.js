@@ -7,6 +7,6 @@ peatLevelRouter.get("/", peatLevelController.getAllPeatLevel);
 peatLevelRouter.get("/:id", peatLevelController.getPeatLevelById);
 peatLevelRouter.post("/", peatLevelController.createPeatLevel);
 peatLevelRouter.put("/:id", peatLevelController.updatePeatLevel);
-peatLevelRouter.delete("/:id", peatLevelController.removePeatLevel);
+peatLevelRouter.delete("/:id", peatLevelController.deletePeatLevel);
 
 export default peatLevelRouter;

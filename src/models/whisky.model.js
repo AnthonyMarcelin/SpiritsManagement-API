@@ -1,5 +1,5 @@
-import sequelize from "../database/client.js";
 import { DataTypes, Model } from "sequelize";
+import sequelize from "../database/client.js";
 
 export default class Whisky extends Model {}
 
@@ -25,25 +25,43 @@ Whisky.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    label_id: {
+    labelId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      field: 'label_id',
     },
-    origin_id: {
+    originId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      field: 'origin_id',
     },
-    supplier_id: {
+    supplierId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      field: 'supplier_id',
     },
-    gender_id: {
+    typeId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'type_id',
+    },
+    genderId: {
       type: DataTypes.INTEGER,
       allowNull: true,
+      field: 'gender_id',
     },
-    nature_id: {
+    natureId: {
       type: DataTypes.INTEGER,
       allowNull: true,
+      field: 'nature_id',
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "user",
+        key: "id",
+      },
     },
   },
   {
