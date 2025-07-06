@@ -3,15 +3,13 @@ import Label from "../models/label.model.js";
 const labelController = {
   getAllLabel: async (req, res) => {
     try {
-      const label = await Label.findAll();
-
-      if (!label) {
-        return res.status(400).json({ message: "Aucun label disponible" });
+      const labels = await Label.findAll();
+      if (!labels || labels.length === 0) {
+        return res.status(404).json({ message: "Aucun label disponible" });
       }
-
-      res.status(200).json(label);
+      return res.status(200).json(labels);
     } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
+      return res.status(500).json({ error: error.message });
     }
   },
 
@@ -21,26 +19,24 @@ const labelController = {
       if (!label) {
         return res.status(404).json({ error: "Label non trouvé" });
       }
-      res.status(200).json(label);
+      return res.status(200).json(label);
     } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
+      return res.status(500).json({ error: error.message });
     }
   },
 
   createLabel: async (req, res) => {
     try {
       const { name, color } = req.body;
-
       if (!name || !color) {
-        return res
-          .status(400)
-          .json({ error: "Missing body parameter: 'name' or 'color'." });
+        return res.status(400).json({
+          error: "Missing body parameter: 'name' or 'color'.",
+        });
       }
-
       const newLabel = await Label.create({ name, color });
-      res.status(201).json(newLabel);
+      return res.status(201).json(newLabel);
     } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
+      return res.status(500).json({ error: error.message });
     }
   },
 
@@ -50,25 +46,30 @@ const labelController = {
       if (!label) {
         return res.status(404).json({ error: "Label non trouvé" });
       }
-
-      await label.update(req.body);
-      res.status(200).json(label);
+      const { name, color } = req.body;
+      const updateData = {};
+      if (typeof name !== 'undefined') updateData.name = name;
+      if (typeof color !== 'undefined') updateData.color = color;
+      if (Object.keys(updateData).length === 0) {
+        return res.status(400).json({ error: "Aucune donnée à mettre à jour." });
+      }
+      await label.update(updateData);
+      return res.status(200).json(label);
     } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
+      return res.status(500).json({ error: error.message });
     }
   },
 
-  removeLabel: async (req, res) => {
+  deleteLabel: async (req, res) => {
     try {
       const label = await Label.findByPk(req.params.id);
       if (!label) {
         return res.status(404).json({ error: "Label non trouvé" });
       }
-
       await label.destroy();
-      res.status(204).end();
+      return res.status(204).end();
     } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
+      return res.status(500).json({ error: error.message });
     }
   },
 };

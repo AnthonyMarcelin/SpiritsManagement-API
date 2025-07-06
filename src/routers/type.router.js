@@ -7,6 +7,6 @@ typeRouter.get("/", typeController.getAllType);
 typeRouter.get("/:id", typeController.getTypeById);
 typeRouter.post("/", typeController.createType);
 typeRouter.put("/:id", typeController.updateType);
-typeRouter.delete("/:id", typeController.removeType);
+typeRouter.delete("/:id", typeController.deleteType);
 
 export default typeRouter;

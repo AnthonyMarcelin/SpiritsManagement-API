@@ -14,20 +14,23 @@ Type.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    for_whisky: {
+    forWhisky: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+      field: 'for_whisky',
     },
-    for_rhum: {
+    forRhum: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+      field: 'for_rhum',
     },
-    for_beer: {
+    forBeer: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+      field: 'for_beer',
     },
   },
   {

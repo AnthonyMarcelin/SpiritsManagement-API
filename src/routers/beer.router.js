@@ -1,7 +1,5 @@
 import express from "express";
-import beerController, {
-  getBeerTypes,
-} from "../controllers/beer.controller.js";
+import beerController from "../controllers/beer.controller.js";
 import multer from "multer";
 import path from "path";
 
@@ -28,7 +26,7 @@ const upload = multer({ storage, fileFilter });
 
 beerRouter.get("/", beerController.getAllBeer);
 beerRouter.get("/:id", beerController.getBeerById);
-beerRouter.get("/types", getBeerTypes);
+beerRouter.get("/types", beerController.getBeerTypes);
 
 // Nouvelle route POST avec upload de photo
 beerRouter.post("/", upload.single("photo"), beerController.createBeer);

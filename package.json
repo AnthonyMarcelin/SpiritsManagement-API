@@ -10,7 +10,9 @@
     "db:create": " node src/migrations/01.createTables.js",
     "db:seed": "node src/migrations/02.seedTables.js",
     "db:reset": "node src/migrations/01.createTables.js && node src/migrations/02.seedTables.js",
-    "test_sequelize": "node src/database/client.js"
+    "test_sequelize": "node src/database/client.js",
+    "lint": "eslint .",
+    "format": "prettier --write ."
   },
   "repository": {
     "type": "git",
@@ -27,5 +29,12 @@
     "pnpm": "^10.6.3",
     "sequelize": "^6.37.7",
     "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-import": "^2.32.0",
+    "prettier": "^3.6.2"
   }
 }

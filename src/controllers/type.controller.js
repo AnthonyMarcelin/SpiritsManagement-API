@@ -5,41 +5,54 @@ const typeController = {
     try {
       // Filtrage automatique selon le type d'alcool passé en query ?alcohol=whisky|rhum|beer
       const { alcohol } = req.query;
-      let where = {};
-      if (alcohol === "whisky") where.for_whisky = true;
-      else if (alcohol === "rhum") where.for_rhum = true;
-      else if (alcohol === "beer") where.for_beer = true;
+      const where = {};
+      if (alcohol === "whisky") where.forWhisky = true;
+      else if (alcohol === "rhum") where.forRhum = true;
+      else if (alcohol === "beer") where.forBeer = true;
       const types = await Type.findAll({ where });
-      res.status(200).json(types);
+      return res.status(200).json(types);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      return res.status(500).json({ error: err.message });
     }
   },
   getTypeById: async (req, res) => {
     try {
       const type = await Type.findByPk(req.params.id);
       if (!type) return res.status(404).json({ error: "Not found" });
-      res.status(200).json(type);
+      return res.status(200).json(type);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      return res.status(500).json({ error: err.message });
     }
   },
   createType: async (req, res) => {
     try {
-      const type = await Type.create(req.body);
-      res.status(201).json(type);
+      const { name, forWhisky, forRhum, forBeer } = req.body;
+      if (!name) {
+        return res.status(400).json({ error: "Le champ 'name' est requis." });
+      }
+      const type = await Type.create({ name, forWhisky, forRhum, forBeer });
+      return res.status(201).json(type);
     } catch (err) {
-      res.status(400).json({ error: err.message });
+      return res.status(500).json({ error: err.message });
     }
   },
   updateType: async (req, res) => {
     try {
       const type = await Type.findByPk(req.params.id);
       if (!type) return res.status(404).json({ error: "Not found" });
-      await type.update(req.body);
-      res.status(200).json(type);
+      const { name, forWhisky, forRhum, forBeer } = req.body;
+      const updateData = {};
+      if (typeof name !== 'undefined') updateData.name = name;
+      if (typeof forWhisky !== 'undefined') updateData.forWhisky = forWhisky;
+      if (typeof forRhum !== 'undefined') updateData.forRhum = forRhum;
+      if (typeof forBeer !== 'undefined') updateData.forBeer = forBeer;
+      if (Object.keys(updateData).length === 0) {
+        return res.status(400).json({ error: "Aucune donnée à mettre à jour." });
+      }
+      await type.update(updateData);
+      return res.status(200).json(type);
     } catch (err) {
-      res.status(400).json({ error: err.message });
+      return res.status(500).json({ error: err.message });
     }
   },
   deleteType: async (req, res) => {
@@ -47,9 +60,9 @@ const typeController = {
       const type = await Type.findByPk(req.params.id);
       if (!type) return res.status(404).json({ error: "Not found" });
       await type.destroy();
-      res.status(204).end();
+      return res.status(204).end();
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      return res.status(500).json({ error: err.message });
     }
   },
 };

@@ -7,6 +7,7 @@ import {
   Type,
   Origin,
   PeatLevel,
+  User,
   sequelize,
 } from "../models/associations.js";
 
@@ -39,9 +40,9 @@ const peatLevels = [
   "Épicé",
   "Doux",
 ];
-for (const name of peatLevels) {
-  await PeatLevel.create({ name });
-}
+await Promise.all(
+  peatLevels.map((name) => PeatLevel.create({ name }))
+);
 
 // Récupération de l'id du niveau "Non tourbé" pour le whisky de test
 const nonTourbePeat = await PeatLevel.findOne({
@@ -50,11 +51,11 @@ const nonTourbePeat = await PeatLevel.findOne({
 
 // Types (avec filtrage par alcool)
 const singleMalt = await ensureType("single malt", { for_whisky: true });
-const blend = await ensureType("blend", { for_whisky: true });
 const rhumBlanc = await ensureType("blanc", { for_rhum: true });
-const rhumAmbre = await ensureType("ambré", { for_rhum: true });
-const biereBlonde = await ensureType("blonde", { for_beer: true });
-const biereBrune = await ensureType("brune", { for_beer: true });
+await ensureType("blend", { for_whisky: true });
+await ensureType("ambré", { for_rhum: true });
+await ensureType("blonde", { for_beer: true });
+await ensureType("brune", { for_beer: true });
 
 // Types spécifiques whisky
 const whiskyTypes = [
@@ -86,9 +87,9 @@ const whiskyTypes = [
   "Experimental / Limited Edition",
   "World Whisky",
 ];
-for (const typeName of whiskyTypes) {
-  await ensureType(typeName, { for_whisky: true });
-}
+await Promise.all(
+  whiskyTypes.map((typeName) => ensureType(typeName, { for_whisky: true }))
+);
 
 // Types spécifiques rhum (création AVANT toute utilisation)
 const rhumTypes = [
@@ -131,15 +132,15 @@ const rhumTypes = [
   "Finish Vin Rouge",
   "Finish Vin Blanc",
 ];
-for (const typeName of rhumTypes) {
-  await ensureType(typeName, { for_rhum: true });
-}
+await Promise.all(
+  rhumTypes.map((typeName) => ensureType(typeName, { for_rhum: true }))
+);
 
 // Types spécifiques bière (création AVANT toute utilisation)
 const beerTypes = ["IPA (India Pale Ale)", "Hefeweizen", "Stout", "Punk IPA"];
-for (const typeName of beerTypes) {
-  await ensureType(typeName, { for_beer: true });
-}
+await Promise.all(
+  beerTypes.map((typeName) => ensureType(typeName, { for_beer: true }))
+);
 
 // Origines (à placer avant toute utilisation)
 const ecosse = await Origin.create({ country: "Ecosse" });
@@ -152,31 +153,57 @@ const supplier1 = await Supplier.create({
 });
 const supplier2 = await Supplier.create({ name: "Whisky.fr", adress: "Lyon" });
 
+// Création de 3 utilisateurs de test (à faire AVANT tout ce qui a besoin de userId)
+const adminUser = await User.create({
+  pseudo: "admin",
+  firstname: "Admin",
+  lastname: "User",
+  email: "admin@example.com",
+  password: "adminpass", // Remplacer par un hash en prod
+  isAdmin: true,
+});
+const johnUser = await User.create({
+  pseudo: "john",
+  firstname: "John",
+  lastname: "Doe",
+  email: "john@example.com",
+  password: "johnpass",
+  isAdmin: false,
+});
+const janeUser = await User.create({
+  pseudo: "jane",
+  firstname: "Jane",
+  lastname: "Smith",
+  email: "jane@example.com",
+  password: "janepass",
+  isAdmin: false,
+});
+
 console.log("Ajout de whisky de test...");
-const AberlourWhisky = await Whisky.create({
+await Whisky.create({
   name: "Aberlour",
   description: "Très bon",
   price: 35.9,
-  label_id: excellent.id,
-  origin_id: ecosse.id,
-  supplier_id: supplier1.id,
-  peat_level_id: nonTourbePeat.id,
-  type_id: singleMalt.id,
+  labelId: excellent.id,
+  originId: ecosse.id,
+  supplierId: supplier1.id,
+  peatLevelId: nonTourbePeat.id,
+  typeId: singleMalt.id,
+  userId: adminUser.id,
 });
-
-// Ajout de plusieurs whiskies
 await Whisky.create({
   name: "Laphroaig 10",
   description: "Tourbé, iodé, médicinal, classique d'Islay.",
   review: "Puissant, salin, fumé, finale longue.",
   price: 49.9,
-  label_id: excellent.id,
-  origin_id: ecosse.id,
-  supplier_id: supplier1.id,
-  peat_level_id: (
+  labelId: excellent.id,
+  originId: ecosse.id,
+  supplierId: supplier1.id,
+  peatLevelId: (
     await PeatLevel.findOne({ where: { name: "Très tourbé" } })
   ).id,
-  type_id: (await ensureType("Single Malt", { for_whisky: true })).id,
+  typeId: (await ensureType("Single Malt", { for_whisky: true })).id,
+  userId: adminUser.id,
   photo: null,
 });
 await Whisky.create({
@@ -184,13 +211,14 @@ await Whisky.create({
   description: "Miel, fruits jaunes, douceur, Highlands.",
   review: "Rond, doux, notes de miel, finale courte.",
   price: 39.5,
-  label_id: bon.id,
-  origin_id: ecosse.id,
-  supplier_id: supplier2.id,
-  peat_level_id: (
+  labelId: bon.id,
+  originId: ecosse.id,
+  supplierId: supplier2.id,
+  peatLevelId: (
     await PeatLevel.findOne({ where: { name: "Non tourbé" } })
   ).id,
-  type_id: (await ensureType("Single Malt", { for_whisky: true })).id,
+  typeId: (await ensureType("Single Malt", { for_whisky: true })).id,
+  userId: johnUser.id,
   photo: null,
 });
 await Whisky.create({
@@ -198,25 +226,27 @@ await Whisky.create({
   description: "Single Pot Still irlandais, fruité, épicé.",
   review: "Complexe, fruits rouges, épices douces.",
   price: 62.0,
-  label_id: excellent.id,
-  origin_id: irlande.id,
-  supplier_id: supplier1.id,
-  peat_level_id: (
+  labelId: excellent.id,
+  originId: irlande.id,
+  supplierId: supplier1.id,
+  peatLevelId: (
     await PeatLevel.findOne({ where: { name: "Non tourbé" } })
   ).id,
-  type_id: (await ensureType("Single Pot Still", { for_whisky: true })).id,
+  typeId: (await ensureType("Single Pot Still", { for_whisky: true })).id,
+  userId: janeUser.id,
   photo: null,
 });
 
 console.log("Ajout de rhum de test...");
-const DiplomaticoRhum = await Rhum.create({
+await Rhum.create({
   name: "Diplomatico",
   description: "Rhum vénézuélien doux",
   price: 42.0,
-  label_id: bon.id,
-  origin_id: irlande.id,
-  supplier_id: supplier2.id,
-  type_id: rhumBlanc.id,
+  labelId: bon.id,
+  originId: irlande.id,
+  supplierId: supplier2.id,
+  typeId: rhumBlanc.id,
+  userId: adminUser.id,
 });
 
 // Ajout de plusieurs rhums (utilisation de ensureType partout)
@@ -224,39 +254,43 @@ await Rhum.create({
   name: "Diplomatico Reserva Exclusiva",
   description: "Rhum vénézuélien doux, notes de caramel et d'orange.",
   price: 42.0,
-  label_id: bon.id,
-  origin_id: irlande.id,
-  supplier_id: supplier2.id,
-  type_id: (await ensureType("Aged Rum", { for_rhum: true })).id,
+  labelId: bon.id,
+  originId: irlande.id,
+  supplierId: supplier2.id,
+  typeId: (await ensureType("Aged Rum", { for_rhum: true })).id,
+  userId: johnUser.id,
 });
 await Rhum.create({
   name: "Clément Canne Bleue",
   description: "Rhum agricole blanc, Martinique, canne fraîche.",
   price: 29.0,
-  label_id: moyen.id,
-  origin_id: ecosse.id,
-  supplier_id: supplier1.id,
-  type_id: (await ensureType("Blanc", { for_rhum: true })).id,
+  labelId: moyen.id,
+  originId: ecosse.id,
+  supplierId: supplier1.id,
+  typeId: (await ensureType("Blanc", { for_rhum: true })).id,
+  userId: janeUser.id,
 });
 await Rhum.create({
   name: "Neisson XO",
   description: "Rhum vieux agricole, boisé, épicé, fruits secs.",
   price: 85.0,
-  label_id: excellent.id,
-  origin_id: irlande.id,
-  supplier_id: supplier2.id,
-  type_id: (await ensureType("Vieux", { for_rhum: true })).id,
+  labelId: excellent.id,
+  originId: irlande.id,
+  supplierId: supplier2.id,
+  typeId: (await ensureType("Vieux", { for_rhum: true })).id,
+  userId: adminUser.id,
 });
 
 console.log("Ajout de bière de test...");
-const PunkIPA = await Beer.create({
+await Beer.create({
   name: "Punk IPA",
   description: "Bière craft écossaise",
   price: 3.5,
-  label_id: moyen.id,
-  origin_id: ecosse.id,
-  supplier_id: supplier1.id,
-  type_id: (await ensureType("Punk IPA", { for_beer: true })).id,
+  labelId: moyen.id,
+  originId: ecosse.id,
+  supplierId: supplier1.id,
+  typeId: (await ensureType("Punk IPA", { for_beer: true })).id,
+  userId: adminUser.id,
 });
 
 // Ajout de plusieurs bières (utilisation de ensureType partout)
@@ -264,29 +298,29 @@ await Beer.create({
   name: "Punk IPA",
   description: "Bière craft écossaise, houblonnée, agrumes.",
   price: 3.5,
-  label_id: moyen.id,
-  origin_id: ecosse.id,
-  supplier_id: supplier1.id,
-  type_id: (await ensureType("IPA (India Pale Ale)", { for_beer: true })).id,
+  labelId: moyen.id,
+  originId: ecosse.id,
+  supplierId: supplier1.id,
+  typeId: (await ensureType("IPA (India Pale Ale)", { for_beer: true })).id,
+  userId: johnUser.id,
 });
 await Beer.create({
   name: "Weihenstephaner Hefeweissbier",
   description: "Blanche allemande, banane, clou de girofle.",
   price: 2.8,
-  label_id: bon.id,
-  origin_id: irlande.id,
-  supplier_id: supplier2.id,
-  type_id: (await ensureType("Hefeweizen", { for_beer: true })).id,
+  labelId: bon.id,
+  originId: irlande.id,
+  supplierId: supplier2.id,
+  typeId: (await ensureType("Hefeweizen", { for_beer: true })).id,
+  userId: janeUser.id,
 });
 await Beer.create({
   name: "Guinness Draught",
   description: "Stout irlandaise, crémeuse, torréfiée.",
   price: 3.2,
-  label_id: moyen.id,
-  origin_id: irlande.id,
-  supplier_id: supplier1.id,
-  type_id: (await ensureType("Stout", { for_beer: true })).id,
+  labelId: moyen.id,
+  originId: irlande.id,
+  supplierId: supplier1.id,
+  typeId: (await ensureType("Stout", { for_beer: true })).id,
+  userId: adminUser.id,
 });
-
-console.log("Migration OK ! Fermeture de la connexion");
-await sequelize.close();
