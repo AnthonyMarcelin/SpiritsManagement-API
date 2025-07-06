@@ -15,7 +15,18 @@ const userController = {
     }
   },
 
-  getUserById: async (req, res) => {},
+  getUserById: async (req, res) => {
+    try {
+      const user = await User.findByPK(req.parama.id);
+
+      if (!user) {
+        return res.status(400).json({ message: "Utilisateur non trouve" });
+      }
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
 
   createUser: async (req, res) => {
     try {
@@ -46,7 +57,7 @@ const userController = {
       const { pseudo, firstname, lastname, email, password, isAdmin } =
         req.body;
 
-      const newUser = await User.update({
+      const user = await User.update({
         pseudo,
         firstname,
         lastname,
@@ -58,7 +69,7 @@ const userController = {
       if ((!pseudo, !firstname, !lastname, !email, !password, !isAdmin)) {
         res.status(400).json({ error: "Missing body parameter" });
       } else {
-        res.status(201).json(newUser);
+        res.status(201).json(user);
       }
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
