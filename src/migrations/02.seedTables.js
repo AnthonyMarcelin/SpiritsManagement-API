@@ -7,8 +7,7 @@ import {
   Type,
   Origin,
   PeatLevel,
-  User,
-  sequelize,
+  User
 } from "../models/associations.js";
 
 // Fonction utilitaire pour garantir l'existence d'un type
