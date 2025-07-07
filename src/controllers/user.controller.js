@@ -25,25 +25,6 @@ const userController = {
     }
   },
 
-  createUser: async (req, res) => {
-    try {
-      const { pseudo, firstname, lastname, email, password, isAdmin } = req.body;
-      if (!pseudo || !firstname || !lastname || !email || !password || typeof isAdmin === 'undefined') {
-        return res.status(400).json({ error: "Missing body parameter" });
-      }
-      const newUser = await User.create({
-        pseudo,
-        firstname,
-        lastname,
-        email,
-        password,
-        isAdmin,
-      });
-      return res.status(201).json(newUser);
-    } catch (error) {
-      return res.status(500).json({ error: error.message });
-    }
-  },
 
   updateUser: async (req, res) => {
     try {
