@@ -4,7 +4,7 @@ import Type from "../models/type.model.js";
 const whiskyController = {
   getAllWhisky: async (req, res) => {
     try {
-      const whisky = await Whisky.findAll();
+      const whisky = await Whisky.findAll({ where: { userId: req.user.id } });
       if (!whisky) {
         return res.status(400).json({ message: "Aucun whisky disponible" });
       }
@@ -16,7 +16,7 @@ const whiskyController = {
 
   getWhiskyById: async (req, res) => {
     try {
-      const whisky = await Whisky.findByPk(req.params.id);
+      const whisky = await Whisky.findOne({ where: { id: req.params.id, userId: req.user.id } });
       if (!whisky) {
         return res.status(404).json({ error: "whisky non trouvé" });
       }
@@ -57,6 +57,7 @@ const whiskyController = {
         peatLevelId,
         typeId,
         photo: photoPath,
+        userId: req.user.id, // Associer le whisky à l'utilisateur connecté
       });
       return res.status(201).json(newWhisky);
     } catch (error) {
