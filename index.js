@@ -26,7 +26,7 @@ app.use("/api/label", labelRouter);
 app.use("/api/origin", originRouter);
 app.use("/api/supplier", supplierRouter);
 app.use("/api/user", userRouter);
-app.use("/api/register", authRouter)
+app.use("/api/auth", authRouter)
 
 app.listen(process.env.PORT, () => {
   console.log(`Serveur lançé sur le port ${process.env.PORT}`);

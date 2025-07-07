@@ -1,3 +1,4 @@
+import argon2 from "argon2";
 import {
   Whisky,
   Rhum,
@@ -153,12 +154,16 @@ const supplier1 = await Supplier.create({
 const supplier2 = await Supplier.create({ name: "Whisky.fr", adress: "Lyon" });
 
 // Création de 3 utilisateurs de test (à faire AVANT tout ce qui a besoin de userId)
+const adminPassword = await argon2.hash("adminpass");
+const johnPassword = await argon2.hash("johnpass");
+const janePassword = await argon2.hash("janepass");
+
 const adminUser = await User.create({
   pseudo: "admin",
   firstname: "Admin",
   lastname: "User",
   email: "admin@example.com",
-  password: "adminpass", // Remplacer par un hash en prod
+  password: adminPassword, // Hashé avec argon2
   isAdmin: true,
 });
 const johnUser = await User.create({
@@ -166,7 +171,7 @@ const johnUser = await User.create({
   firstname: "John",
   lastname: "Doe",
   email: "john@example.com",
-  password: "johnpass",
+  password: johnPassword, // Hashé avec argon2
   isAdmin: false,
 });
 const janeUser = await User.create({
@@ -174,7 +179,7 @@ const janeUser = await User.create({
   firstname: "Jane",
   lastname: "Smith",
   email: "jane@example.com",
-  password: "janepass",
+  password: janePassword, // Hashé avec argon2
   isAdmin: false,
 });
 
