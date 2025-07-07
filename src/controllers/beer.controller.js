@@ -4,7 +4,7 @@ import Type from "../models/type.model.js";
 const beerController = {
   getAllBeer: async (req, res) => {
     try {
-      const beers = await Beer.findAll();
+      const beers = await Beer.findAll({ where: { userId: req.user.id } });
       if (!beers || beers.length === 0) {
         return res.status(404).json({ message: "Aucune bière disponible" });
       }
@@ -16,7 +16,7 @@ const beerController = {
 
   getBeerById: async (req, res) => {
     try {
-      const beer = await Beer.findByPk(req.params.id);
+      const beer = await Beer.findOne({ where: { id: req.params.id, userId: req.user.id } });
       if (!beer) {
         return res.status(404).json({ error: "Bière non trouvée" });
       }
@@ -44,6 +44,7 @@ const beerController = {
         price,
         origin,
         photo: photoPath,
+        userId: req.user.id,
       });
       return res.status(201).json(newBeer);
     } catch (error) {
@@ -53,7 +54,7 @@ const beerController = {
 
   updateBeer: async (req, res) => {
     try {
-      const beer = await Beer.findByPk(req.params.id);
+      const beer = await Beer.findOne({ where: { id: req.params.id, userId: req.user.id } });
       if (!beer) {
         return res.status(404).json({ error: "Bière non trouvée" });
       }
@@ -80,7 +81,7 @@ const beerController = {
 
   deleteBeer: async (req, res) => {
     try {
-      const beer = await Beer.findByPk(req.params.id);
+      const beer = await Beer.findOne({ where: { id: req.params.id, userId: req.user.id } });
       if (!beer) {
         return res.status(404).json({ error: "Bière non trouvée" });
       }

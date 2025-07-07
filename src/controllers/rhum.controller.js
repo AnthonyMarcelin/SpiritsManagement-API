@@ -4,7 +4,7 @@ import Type from "../models/type.model.js";
 const rhumController = {
   getAllRhum: async (req, res) => {
     try {
-      const rhums = await Rhum.findAll();
+      const rhums = await Rhum.findAll({ where: { userId: req.user.id } });
       if (!rhums || rhums.length === 0) {
         return res.status(404).json({ message: "Aucun rhum disponible" });
       }
@@ -17,7 +17,7 @@ const rhumController = {
   getRhumById: async (req, res) => {
     try {
       const { id } = req.params;
-      const rhum = await Rhum.findByPk(id);
+      const rhum = await Rhum.findOne({ where: { id, userId: req.user.id } });
       if (!rhum) {
         return res.status(404).json({ message: "Rhum non trouvé" });
       }
@@ -45,6 +45,7 @@ const rhumController = {
         price,
         origin,
         photo: photoPath,
+        userId: req.user.id,
       });
       return res.status(201).json(newRhum);
     } catch (error) {
@@ -55,7 +56,7 @@ const rhumController = {
   updateRhum: async (req, res) => {
     try {
       const { id } = req.params;
-      const rhum = await Rhum.findByPk(id);
+      const rhum = await Rhum.findOne({ where: { id, userId: req.user.id } });
       if (!rhum) {
         return res.status(404).json({ message: "Rhum non trouvé" });
       }
@@ -83,7 +84,7 @@ const rhumController = {
   deleteRhum: async (req, res) => {
     try {
       const { id } = req.params;
-      const rhum = await Rhum.findByPk(id);
+      const rhum = await Rhum.findOne({ where: { id, userId: req.user.id } });
       if (!rhum) {
         return res.status(404).json({ message: "Rhum non trouvé" });
       }
