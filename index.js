@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import cors from "cors";
 
 import whiskyRouter from "./src/routers/whisky.router.js";
 import beerRouter from "./src/routers/beer.router.js";
@@ -13,6 +14,11 @@ import userRouter from "./src/routers/user.router.js";
 import authRouter from "./src/routers/auth.router.js";
 
 const app = express();
+
+app.use(cors({
+  origin: "http://localhost:5173" || "URL_RAILWAY",
+  credentials:true,
+}))
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
