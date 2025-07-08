@@ -1,6 +1,8 @@
 import "dotenv/config";
 import express from "express";
 
+
+import cookieParser from "cookie-parser";
 import whiskyRouter from "./src/routers/whisky.router.js";
 import beerRouter from "./src/routers/beer.router.js";
 import rhumRouter from "./src/routers/rhum.router.js";
@@ -14,6 +16,8 @@ import authRouter from "./src/routers/auth.router.js";
 
 const app = express();
 
+
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
