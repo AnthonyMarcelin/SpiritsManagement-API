@@ -45,15 +45,10 @@ Whisky.init(
       allowNull: false,
       field: 'type_id',
     },
-    genderId: {
+    peatLevelId: {
       type: DataTypes.INTEGER,
-      allowNull: true,
-      field: 'gender_id',
-    },
-    natureId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      field: 'nature_id',
+      allowNull: false,
+      field: 'peat_level_id',
     },
     userId: {
       type: DataTypes.INTEGER,
