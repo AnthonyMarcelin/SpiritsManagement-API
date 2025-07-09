@@ -4,7 +4,9 @@ import Type from "../models/type.model.js";
 const whiskyController = {
   getAllWhisky: async (req, res) => {
     try {
-      const whisky = await Whisky.findAll({ where: { userId: req.user.id } });
+      // Si l'utilisateur est authentifié, retourner ses whiskies, sinon tous les whiskies
+      const whereClause = req.user ? { userId: req.user.id } : {};
+      const whisky = await Whisky.findAll({ where: whereClause });
       if (!whisky) {
         return res.status(400).json({ message: "Aucun whisky disponible" });
       }

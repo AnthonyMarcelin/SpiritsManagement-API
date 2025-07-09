@@ -5,14 +5,14 @@ import upload from "../utils/multerConfig.js";
 
 const whiskyRouter = express.Router();
 
+// Route publique pour les tests
 whiskyRouter.get("/", whiskyController.getAllWhisky);
-whiskyRouter.get("/:id", whiskyController.getWhiskyById);
-whiskyRouter.get("/types", whiskyController.getWhiskyTypes);
 
-// routes protégées
-whiskyRouter.use(verifyToken);
-whiskyRouter.post("/", upload.single("photo"), whiskyController.createWhisky);
-whiskyRouter.put("/:id", upload.single("photo"), whiskyController.updateWhisky);
-whiskyRouter.delete("/:id", whiskyController.deleteWhisky);
+// Routes protégées
+whiskyRouter.get("/types", verifyToken, whiskyController.getWhiskyTypes);
+whiskyRouter.get("/:id", verifyToken, whiskyController.getWhiskyById);
+whiskyRouter.post("/", verifyToken, upload.single("photo"), whiskyController.createWhisky);
+whiskyRouter.put("/:id", verifyToken, upload.single("photo"), whiskyController.updateWhisky);
+whiskyRouter.delete("/:id", verifyToken, whiskyController.deleteWhisky);
 
 export default whiskyRouter;

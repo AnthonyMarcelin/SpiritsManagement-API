@@ -18,7 +18,10 @@ import authRouter from "./src/routers/auth.router.js";
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:5173" || "URL_RAILWAY",
+  origin:
+  ["http://localhost:5173",
+  "URL_RAILWAY",
+  "http://localhost:4200"],
   credentials:true,
 }))
 
