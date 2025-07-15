@@ -25,26 +25,26 @@ const authController = {
 				isAdmin: false // Par défaut, personne n'est admin à l'inscription
 			});
 
-      const token = jwt.sign(
-        { id: newUser.id, email: newUser.email, isAdmin: newUser.isAdmin },
-        jwtSecretKey,
-        {
-          expiresIn: "1h",
-        }
-      );
+	  const token = jwt.sign(
+		{ id: newUser.id, email: newUser.email, isAdmin: newUser.isAdmin },
+		jwtSecretKey,
+		{
+		  expiresIn: "1h",
+		}
+	  );
 
-      res.cookie("accessToken", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        path: "/",
-        maxAge: 60 * 60 * 1000,
-      });
+	  res.cookie("accessToken", token, {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === "production",
+		sameSite: "strict",
+		path: "/",
+		maxAge: 60 * 60 * 1000,
+	  });
 
 	  // Don't return password
-      const userObj = newUser.get({ plain: true });
-      delete userObj.password;
-      return res.status(201).json({ user: userObj, token });
+	  const userObj = newUser.get({ plain: true });
+	  delete userObj.password;
+	  return res.status(201).json({ user: userObj, token });
 		} catch (error) {
 			return res.status(500).json({ error: error.message });
 		}
@@ -84,14 +84,24 @@ const authController = {
 				maxAge: 60 * 60 * 1000,
 			});
 
-      // Ne jamais retourner le hash du mot de passe
-      const userObj = user.get({ plain: true });
-      delete userObj.password;
-      return res.status(200).json({ user: userObj, token });
+	  // Ne jamais retourner le hash du mot de passe
+	  const userObj = user.get({ plain: true });
+	  delete userObj.password;
+	  return res.status(200).json({ user: userObj, token });
 		} catch (error) {
 			return res.status(500).json({ error: error.message });
 		}
 	},
+
+  me: async (req, res) => {
+	try {
+	  // On retourne les infos de l'utilisateur connecté (hors mot de passe)
+	  const { id, email, pseudo, firstname, lastname, isAdmin } = req.user;
+	  res.json({ id, email, pseudo, firstname, lastname, isAdmin });
+	} catch (error) {
+	  res.status(500).json({ error: "Erreur lors de la récupération du profil" });
+	}
+  },
 };
 
 export default authController;
