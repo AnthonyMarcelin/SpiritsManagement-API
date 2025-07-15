@@ -154,9 +154,9 @@ const supplier1 = await Supplier.create({
 const supplier2 = await Supplier.create({ name: "Whisky.fr", adress: "Lyon" });
 
 // Création de 3 utilisateurs de test (à faire AVANT tout ce qui a besoin de userId)
-const adminPassword = await argon2.hash("adminpass");
-const johnPassword = await argon2.hash("johnpass");
-const janePassword = await argon2.hash("janepass");
+const adminPassword = await argon2.hash("Admin123!");
+const johnPassword = await argon2.hash("JohnDoe1@");
+const janePassword = await argon2.hash("JaneSmi2#");
 
 const adminUser = await User.create({
   pseudo: "admin",
