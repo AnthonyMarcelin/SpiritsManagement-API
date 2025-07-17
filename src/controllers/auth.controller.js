@@ -22,7 +22,7 @@ const authController = {
 				lastname,
 				email,
 				password: hashedPassword,
-				isAdmin: false // Par défaut, personne n'est admin à l'inscription
+				isAdmin: false
 			});
 
 	  const token = jwt.sign(
@@ -84,13 +84,21 @@ const authController = {
 				maxAge: 60 * 60 * 1000,
 			});
 
-	  // Ne jamais retourner le hash du mot de passe
 	  const userObj = user.get({ plain: true });
 	  delete userObj.password;
 	  return res.status(200).json({ user: userObj, token });
 		} catch (error) {
 			return res.status(500).json({ error: error.message });
 		}
+	},
+
+	logout: async (req, res) => {
+
+		res.clearCookie("accessToken", {
+			httpOnly: true,
+			sameSite: "strict",
+	})
+		return res.status(200).json({ message: "Déconnexion réussie" });
 	},
 
   me: async (req, res) => {
