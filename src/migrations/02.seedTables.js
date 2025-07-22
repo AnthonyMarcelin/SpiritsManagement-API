@@ -194,6 +194,8 @@ await Whisky.create({
   peatLevelId: nonTourbePeat.id,
   typeId: singleMalt.id,
   userId: adminUser.id,
+  photo: "https://picsum.photos/id/1011/400/300",
+  note: 4,
 });
 await Whisky.create({
   name: "Laphroaig 10",
@@ -208,7 +210,8 @@ await Whisky.create({
   ).id,
   typeId: (await ensureType("Single Malt", { for_whisky: true })).id,
   userId: adminUser.id,
-  photo: null,
+  photo: "https://picsum.photos/id/1011/400/300",
+  note: 5,
 });
 await Whisky.create({
   name: "Aberfeldy 12",
@@ -223,7 +226,8 @@ await Whisky.create({
   ).id,
   typeId: (await ensureType("Single Malt", { for_whisky: true })).id,
   userId: johnUser.id,
-  photo: null,
+  photo: "https://picsum.photos/id/1011/400/300",
+  note: 3,
 });
 await Whisky.create({
   name: "Redbreast 12",
@@ -238,7 +242,8 @@ await Whisky.create({
   ).id,
   typeId: (await ensureType("Single Pot Still", { for_whisky: true })).id,
   userId: janeUser.id,
-  photo: null,
+  photo: "https://picsum.photos/id/1011/400/300",
+  note: 5,
 });
 
 console.log("Ajout de rhum de test...");
@@ -251,6 +256,8 @@ await Rhum.create({
   supplierId: supplier2.id,
   typeId: rhumBlanc.id,
   userId: adminUser.id,
+  photo: "https://picsum.photos/id/1012/400/300",
+  note: 5,
 });
 
 // Ajout de plusieurs rhums (utilisation de ensureType partout)
@@ -263,6 +270,8 @@ await Rhum.create({
   supplierId: supplier2.id,
   typeId: (await ensureType("Aged Rum", { for_rhum: true })).id,
   userId: johnUser.id,
+  photo: "https://picsum.photos/id/1012/400/300",
+  note: 4,
 });
 await Rhum.create({
   name: "Clément Canne Bleue",
@@ -273,6 +282,8 @@ await Rhum.create({
   supplierId: supplier1.id,
   typeId: (await ensureType("Blanc", { for_rhum: true })).id,
   userId: janeUser.id,
+  photo: "https://picsum.photos/id/1012/400/300",
+  note: 3,
 });
 await Rhum.create({
   name: "Neisson XO",
@@ -283,6 +294,8 @@ await Rhum.create({
   supplierId: supplier2.id,
   typeId: (await ensureType("Vieux", { for_rhum: true })).id,
   userId: adminUser.id,
+  photo: "https://picsum.photos/id/1012/400/300",
+  note: 5,
 });
 
 console.log("Ajout de bière de test...");
@@ -295,6 +308,8 @@ await Beer.create({
   supplierId: supplier1.id,
   typeId: (await ensureType("Punk IPA", { for_beer: true })).id,
   userId: adminUser.id,
+  photo: "https://picsum.photos/id/1015/400/300",
+  note: 3,
 });
 
 // Ajout de plusieurs bières (utilisation de ensureType partout)
@@ -307,6 +322,8 @@ await Beer.create({
   supplierId: supplier1.id,
   typeId: (await ensureType("IPA (India Pale Ale)", { for_beer: true })).id,
   userId: johnUser.id,
+  photo: "https://picsum.photos/id/1015/400/300",
+  note: 4,
 });
 await Beer.create({
   name: "Weihenstephaner Hefeweissbier",
@@ -317,6 +334,8 @@ await Beer.create({
   supplierId: supplier2.id,
   typeId: (await ensureType("Hefeweizen", { for_beer: true })).id,
   userId: janeUser.id,
+  photo: "https://picsum.photos/id/1015/400/300",
+  note: 5,
 });
 await Beer.create({
   name: "Guinness Draught",
@@ -327,4 +346,6 @@ await Beer.create({
   supplierId: supplier1.id,
   typeId: (await ensureType("Stout", { for_beer: true })).id,
   userId: adminUser.id,
+  photo: "https://picsum.photos/id/1015/400/300",
+  note: 2,
 });
