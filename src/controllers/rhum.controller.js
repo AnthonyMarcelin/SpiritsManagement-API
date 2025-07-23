@@ -29,7 +29,7 @@ const rhumController = {
 
   createRhum: async (req, res) => {
     try {
-      const { name, description, review, gender, price, origin } = req.body;
+      const { name, description, review, gender, price, origin, note } = req.body;
       if (!name || !description || !gender || !price || !origin) {
         return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'un rhum." });
       }
@@ -44,6 +44,7 @@ const rhumController = {
         gender,
         price,
         origin,
+        note,
         photo: photoPath,
         userId: req.user.id,
       });
@@ -60,7 +61,7 @@ const rhumController = {
       if (!rhum) {
         return res.status(404).json({ message: "Rhum non trouvé" });
       }
-      const { name, description, review, gender, price, origin } = req.body;
+      const { name, description, review, gender, price, origin, note } = req.body;
       const updateData = {};
       if (typeof name !== 'undefined') updateData.name = name;
       if (typeof description !== 'undefined') updateData.description = description;
@@ -68,6 +69,7 @@ const rhumController = {
       if (typeof gender !== 'undefined') updateData.gender = gender;
       if (typeof price !== 'undefined') updateData.price = price;
       if (typeof origin !== 'undefined') updateData.origin = origin;
+      if (typeof note !== 'undefined') updateData.note = note;
       if (req.file) {
         updateData.photo = req.file.path;
       }

@@ -5,6 +5,7 @@ const rhumSchema = Joi.object({
   description: Joi.string().allow('').max(1000),
   review: Joi.string().allow('').max(1000),
   price: Joi.number().positive().required(),
+  note: Joi.number().min(0).max(10).precision(1).allow(null),
   photo: Joi.string().allow(''),
   labelId: Joi.number().integer().required(),
   originId: Joi.number().integer().required(),

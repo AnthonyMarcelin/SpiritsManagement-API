@@ -4,6 +4,6 @@ export default function validateBody(schema) {
 		if (error) {
 			return res.status(400).json({error : error.details[0].message})
 		}
-		next();
+		return next();
 	}
 }

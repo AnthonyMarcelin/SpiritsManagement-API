@@ -40,6 +40,7 @@ const whiskyController = {
         supplierId,
         peatLevelId,
         typeId,
+        note
       } = req.body;
       if (!name || !description || !price || !labelId || !originId || !supplierId || !peatLevelId || !typeId) {
         return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'un whisky." });
@@ -58,6 +59,7 @@ const whiskyController = {
         supplierId,
         peatLevelId,
         typeId,
+        note,
         photo: photoPath,
         userId: req.user.id, // Associer le whisky à l'utilisateur connecté
       });
@@ -84,6 +86,7 @@ const whiskyController = {
         supplierId,
         peatLevelId,
         typeId,
+        note
       } = req.body;
       const updateData = {};
       if (typeof name !== 'undefined') updateData.name = name;
@@ -95,6 +98,7 @@ const whiskyController = {
       if (typeof supplierId !== 'undefined') updateData.supplierId = supplierId;
       if (typeof peatLevelId !== 'undefined') updateData.peatLevelId = peatLevelId;
       if (typeof typeId !== 'undefined') updateData.typeId = typeId;
+      if (typeof note !== 'undefined') updateData.note = note;
       if (req.file) {
         updateData.photo = req.file.path;
       }

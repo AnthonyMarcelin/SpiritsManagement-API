@@ -17,6 +17,10 @@ Beer.init(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+     note: {
+      type: DataTypes.DECIMAL(3, 1), // 0 à 10, un chiffre après la virgule
+      allowNull: true,
+    },
     price: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
