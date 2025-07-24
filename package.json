@@ -5,14 +5,17 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node --watch index.js",
     "db:create": " node src/migrations/01.createTables.js",
     "db:seed": "node src/migrations/02.seedTables.js",
     "db:reset": "node src/migrations/01.createTables.js && node src/migrations/02.seedTables.js",
     "test_sequelize": "node src/database/client.js",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "mocha --timeout 10000",
+    "test:email": "mocha src/utils/nodemailer/tests/emailSimple.test.js --timeout 10000",
+    "test:email-integration": "mocha src/utils/nodemailer/tests/emailIntegration.test.js --timeout 15000",
+    "test:integration-simple": "mocha src/utils/nodemailer/tests/emailIntegrationSimple.test.js --timeout 15000"
   },
   "repository": {
     "type": "git",
@@ -31,16 +34,19 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.1",
+    "nodemailer": "^7.0.5",
     "pg": "^8.13.3",
-    "pnpm": "^10.6.3",
-    "sequelize": "^6.37.7",
-    "zod": "^3.24.2"
+    "sequelize": "^6.37.7"
   },
   "devDependencies": {
+    "chai": "^5.2.1",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-import": "^2.32.0",
-    "prettier": "^3.6.2"
+    "mocha": "^11.7.1",
+    "prettier": "^3.6.2",
+    "sinon": "^21.0.0",
+    "supertest": "^7.1.4"
   }
 }

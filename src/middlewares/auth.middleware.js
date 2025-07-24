@@ -25,7 +25,12 @@ const verifyToken = (req, res, next) => {
 			return res.status(403).json({ message: "user ID not found or invalid" });
 		}
 
-		req.user = { id: Number(decoded.id), email: decoded.email, isAdmin: decoded.isAdmin };
+		req.user = {
+			id: Number(decoded.id),
+			email: decoded.email,
+			isAdmin: decoded.isAdmin,
+			isVerified: decoded.isVerified || false // ✅ Utiliser la même typo que votre modèle
+		};
 
 		next();
 

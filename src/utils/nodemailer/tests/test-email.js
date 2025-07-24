@@ -1,4 +1,4 @@
-import sendEmail from './nodemailer.js';
+import sendEmail from '../nodemailer.js';
 
 const testEmail = async () => {
     try {

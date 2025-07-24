@@ -41,6 +41,9 @@ app.use("/api/supplier", supplierRouter);
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter)
 
+// Export for tests
+export default app;
+
 app.listen(process.env.PORT, () => {
   console.log(`Serveur lançé sur le port ${process.env.PORT}`);
 });

@@ -4,6 +4,7 @@ import verifyToken from "../middlewares/auth.middleware.js";
 import upload from "../utils/multerConfig.js";
 import validateBody from "../middlewares/validateBody.middleware.js";
 import rhumSchema from "../schemas/rhum.schema.js";
+import verifyEmailConfirmed from "../middlewares/verifiedEmail.middleware.js";
 
 const rhumRouter = express.Router();
 
@@ -13,7 +14,7 @@ rhumRouter.use(verifyToken);
 rhumRouter.get("/", rhumController.getAllRhum);
 rhumRouter.get("/:id", rhumController.getRhumById);
 rhumRouter.get("/types", rhumController.getRhumTypes);
-rhumRouter.post("/",validateBody(rhumSchema), upload.single("photo"), rhumController.createRhum);
+rhumRouter.post("/",validateBody(rhumSchema), upload.single("photo"),verifyEmailConfirmed, rhumController.createRhum);
 rhumRouter.put("/:id",validateBody(rhumSchema), upload.single("photo"), rhumController.updateRhum);
 rhumRouter.delete("/:id", rhumController.deleteRhum);
 

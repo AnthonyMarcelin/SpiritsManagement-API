@@ -11,6 +11,9 @@ const authRouter = express.Router();
 authRouter.post("/register",validateBody(registerSchema), authController.register)
 authRouter.post("/login", loginLimiter, authController.login)
 authRouter.post("/logout", authController.logout);
+authRouter.get("/verify-email", authController.verifyEmail);
+authRouter.post("/forgot-password", authController.forgotPassword);
+authRouter.post("/reset-password", authController.resetPassword);
 
 // Route pour récupérer l'utilisateur connecté
 authRouter.get("/me", verifyToken, authController.me)

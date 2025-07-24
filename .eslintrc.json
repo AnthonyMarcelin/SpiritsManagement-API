@@ -2,7 +2,8 @@
   "env": {
     "browser": false,
     "es2021": true,
-    "node": true
+    "node": true,
+    "mocha": true
   },
   "extends": [
     "eslint:recommended",
@@ -19,6 +20,8 @@
   "plugins": ["import"],
   "rules": {
     "no-console": "off",
+    "consistent-return": "off",
+    "import/order": "off",
     "import/extensions": [
       "error",
       "ignorePackages",
@@ -27,7 +30,34 @@
       }
     ],
     "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "import/no-extraneous-dependencies": ["error", {
+      "devDependencies": [
+        "**/*.test.js",
+        "**/*.spec.js",
+        "**/tests/**"
+      ]
+    }]
   },
+  "overrides": [
+    {
+      "files": ["**/*.test.js", "**/tests/**/*.js"],
+      "env": {
+        "mocha": true
+      },
+      "globals": {
+        "describe": "readonly",
+        "it": "readonly",
+        "before": "readonly",
+        "beforeEach": "readonly",
+        "after": "readonly",
+        "afterEach": "readonly"
+      },
+      "rules": {
+        "no-unused-expressions": "off",
+        "no-unused-vars": ["warn", { "argsIgnorePattern": "^_|^res$|^consoleStub$" }]
+      }
+    }
+  ],
   "ignorePatterns": ["node_modules/", "uploads/", "dist/", "*.config.js"]
 }
