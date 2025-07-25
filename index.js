@@ -17,11 +17,15 @@ import authRouter from "./src/routers/auth.router.js";
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "spiritsmanagement-api-production.up.railway.app",
+  "http://localhost:4200"
+]
+
 app.use(cors({
   origin:
-  ["http://localhost:5173",
-  "URL_RAILWAY",
-  "http://localhost:4200"],
+  allowedOrigins,
   credentials:true,
 }))
 
