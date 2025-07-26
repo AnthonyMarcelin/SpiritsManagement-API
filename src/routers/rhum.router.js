@@ -8,10 +8,9 @@ import verifyEmailConfirmed from "../middlewares/verifiedEmail.middleware.js";
 
 const rhumRouter = express.Router();
 
-// Toutes les routes sont privées
 rhumRouter.use(verifyToken);
 
-rhumRouter.get("/", rhumController.getAllRhum);
+rhumRouter.get("/", verifyToken, rhumController.getAllRhum);
 rhumRouter.get("/:id", rhumController.getRhumById);
 rhumRouter.get("/types", rhumController.getRhumTypes);
 rhumRouter.post("/",validateBody(rhumSchema), upload.single("photo"),verifyEmailConfirmed, rhumController.createRhum);

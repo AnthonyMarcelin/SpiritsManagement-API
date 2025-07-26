@@ -5,11 +5,12 @@ import sequelize from "../database/client.js";
 const whiskyController = {
   getAllWhisky: async (req, res) => {
     try {
-      // Si l'utilisateur est authentifié, retourner ses whiskies, sinon tous les whiskies
-      const whereClause = req.user ? { userId: req.user.id } : {};
-      const whisky = await Whisky.findAll({ where: whereClause });
-      if (!whisky) {
-        return res.status(400).json({ message: "Aucun whisky disponible" });
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: "Utilisateur non authentifié" });
+      }
+      const whisky = await Whisky.findAll({ where: { userId: req.user.id } });
+      if (!whisky || whisky.length === 0) {
+        return res.status(404).json({ message: "Aucun whisky disponible" });
       }
       return res.status(200).json(whisky);
     } catch (error) {
@@ -52,7 +53,6 @@ const whiskyController = {
         return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'un whisky." });
       }
 
-      // Vérification anti-doublon sur le nom du whisky (insensible à la casse)
       const whiskyNameNorm = name.trim();
       const existingWhisky = await Whisky.findOne({
         where: sequelize.where(
@@ -64,7 +64,6 @@ const whiskyController = {
         return res.status(409).json({ error: "Un whisky avec ce nom existe déjà.", whisky: existingWhisky });
       }
 
-      // Gestion labelId (insensible à la casse)
       let finalLabelId = labelId;
       if (!finalLabelId || Number.isNaN(Number(finalLabelId))) {
         const Label = (await import("../models/label.model.js")).default;
@@ -84,7 +83,6 @@ const whiskyController = {
       let finalOriginId = originId;
       const Origin = (await import("../models/origin.model.js")).default;
       if (!finalOriginId || Number.isNaN(Number(finalOriginId))) {
-        // On normalise la recherche en minuscule
         const originCountryRaw = originName || originId;
         const originCountry = originCountryRaw.trim();
         let origin = await Origin.findOne({
@@ -100,11 +98,9 @@ const whiskyController = {
         finalOriginId = origin.id;
       }
 
-      // Gestion supplierId (insensible à la casse)
       let finalSupplierId = supplierId;
       const Supplier = (await import("../models/supplier.model.js")).default;
       if (!finalSupplierId || Number.isNaN(Number(finalSupplierId))) {
-        // On normalise la recherche en minuscule
         const supplierNomRaw = supplierName || supplierId;
         const supplierNom = supplierNomRaw.trim();
         let supplier = await Supplier.findOne({
@@ -136,7 +132,7 @@ const whiskyController = {
         typeId,
         note,
         photo: photoPath,
-        userId: req.user.id, // Associer le whisky à l'utilisateur connecté
+        userId: req.user.id,
       });
       console.log("[WHISKY] Whisky créé :", newWhisky);
       return res.status(201).json(newWhisky);
@@ -188,7 +184,6 @@ const whiskyController = {
     }
   },
 
-  // Ajout d'une méthode pour obtenir les types de whisky facilement côté front
   getWhiskyTypes: async (req, res) => {
     try {
       const types = await Type.findAll({ where: { for_whisky: true } });

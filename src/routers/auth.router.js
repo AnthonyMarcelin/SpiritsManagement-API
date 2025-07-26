@@ -15,7 +15,7 @@ authRouter.get("/verify-email", authController.verifyEmail);
 authRouter.post("/forgot-password", authController.forgotPassword);
 authRouter.post("/reset-password", authController.resetPassword);
 
-// Route pour récupérer l'utilisateur connecté
+// Route to catch connected user
 authRouter.get("/me", verifyToken, authController.me)
 
 export default authRouter;

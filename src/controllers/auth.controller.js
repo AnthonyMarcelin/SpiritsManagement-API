@@ -170,10 +170,10 @@ const authController = {
 				return res.status(404).json({ error: "user not found" });
 			}
 
-			// User non verified cannot login with this condition
-				// if (!user.isVerified) {
-					// 	return res.status(403).json({ error: "Email not verified" });
-					// }
+			// User non verified cannot login
+			if (!user.isVerified) {
+				return res.status(403).json({ error: "Email not verified" });
+			}
 
 			if (!user.password) {
 				return res.status(400).json({ error: "wrong password" });

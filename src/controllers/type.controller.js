@@ -4,7 +4,6 @@ import Type from "../models/type.model.js";
 const typeController = {
   getAllType: async (req, res) => {
     try {
-      // Filtrage automatique selon le type d'alcool passé en query ?alcohol=whisky|rhum|beer
       const { alcohol } = req.query;
       const where = {};
       if (alcohol === "whisky") where.forWhisky = true;

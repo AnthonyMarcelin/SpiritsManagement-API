@@ -6,10 +6,9 @@ import verifyEmailConfirmed from "../middlewares/verifiedEmail.middleware.js";
 
 const whiskyRouter = express.Router();
 
-// Route publique pour les tests
-whiskyRouter.get("/", whiskyController.getAllWhisky);
+whiskyRouter.use(verifyToken);
 
-// Routes protégées
+whiskyRouter.get("/", verifyToken, whiskyController.getAllWhisky);
 whiskyRouter.get("/types", verifyToken, whiskyController.getWhiskyTypes);
 whiskyRouter.get("/:id", verifyToken, whiskyController.getWhiskyById);
 whiskyRouter.post("/", verifyToken, upload.single("photo"), verifyEmailConfirmed, whiskyController.createWhisky);

@@ -9,7 +9,6 @@ import Type from "./type.model.js";
 import Origin from "./origin.model.js";
 import User from "./user.model.js";
 
-// Associations centralisées
 
 Label.hasMany(Whisky, {
   foreignKey: {
@@ -83,7 +82,7 @@ Beer.belongsTo(Origin, {
   foreignKey: { name: "originId", field: "origin_id" },
   as: "origin",
 });
-// --- PEAT LEVEL UNIQUEMENT POUR WHISKY ---
+// --- PEAT LEVEL FOR WHISKY ---
 PeatLevel.hasMany(Whisky, {
   foreignKey: {
     name: "peatLevelId",
@@ -96,7 +95,7 @@ Whisky.belongsTo(PeatLevel, {
   foreignKey: { name: "peatLevelId", field: "peat_level_id" },
   as: "peatLevel",
 });
-// --- TYPE POUR TOUS MAIS FILTRAGE PAR for_whisky, for_rhum, for_beer ---
+// --- FILTERED BY ALCOHOL TYPE ---
 Type.hasMany(Whisky, {
   foreignKey: {
     name: "typeId",
@@ -169,7 +168,6 @@ Beer.belongsTo(Supplier, {
   foreignKey: { name: "supplierId", field: "supplier_id" },
   as: "supplier",
 });
-// Associations User - Alcools (chaque alcool appartient à un user)
 User.hasMany(Whisky, { foreignKey: "userId", as: "whiskies" });
 Whisky.belongsTo(User, { foreignKey: "userId", as: "user" });
 

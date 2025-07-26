@@ -36,7 +36,6 @@ const userController = {
       if (!user) {
         return res.status(404).json({ error: "Utilisateur non trouvé" });
       }
-      // Seul l'admin ou le user concerné peut modifier
       if (!req.user.isAdmin && req.user.id !== Number(req.params.id)) {
         return res.status(403).json({ error: "Accès interdit" });
       }
@@ -47,10 +46,8 @@ const userController = {
       if (typeof lastname !== 'undefined') updateData.lastname = lastname;
       if (typeof email !== 'undefined') updateData.email = email;
       if (typeof password !== 'undefined') {
-        // Hash du mot de passe si modifié
         updateData.password = await argon2.hash(password);
       }
-      // isAdmin ne peut être modifié que par un admin
       if (req.user.isAdmin && typeof req.body.isAdmin !== 'undefined') updateData.isAdmin = req.body.isAdmin;
       if (Object.keys(updateData).length === 0) {
         return res.status(400).json({ error: "Aucune donnée à mettre à jour." });

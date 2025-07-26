@@ -36,7 +36,6 @@ const rhumController = {
         return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'un rhum." });
       }
 
-// Vérification anti-doublon sur le nom du rhum (insensible à la casse)
       const rhumNameNorm = name.trim();
       const existingRhum = await Rhum.findOne({
         where: sequelize.where(
@@ -48,7 +47,6 @@ const rhumController = {
         return res.status(409).json({ error: "Un rhum avec ce nom existe déjà.", rhum: existingRhum });
       }
 
-      // Gestion origin (insensible à la casse)
       let finalOriginId = origin;
       const Origin = (await import("../models/origin.model.js")).default;
       if (!finalOriginId || Number.isNaN(Number(finalOriginId))) {
@@ -66,7 +64,6 @@ const rhumController = {
         finalOriginId = originObj.id;
       }
 
-      // Gestion supplier (insensible à la casse)
       let finalSupplierId = req.body.supplierId;
       const Supplier = (await import("../models/supplier.model.js")).default;
       if (!finalSupplierId || Number.isNaN(Number(finalSupplierId))) {

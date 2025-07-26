@@ -35,7 +35,6 @@ const beerController = {
         return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'une bière." });
       }
 
-      // Vérification anti-doublon sur le nom de la bière (insensible à la casse)
       const beerNameNorm = name.trim();
       const existingBeer = await Beer.findOne({
         where: sequelize.where(
@@ -47,7 +46,6 @@ const beerController = {
         return res.status(409).json({ error: "Une bière avec ce nom existe déjà.", beer: existingBeer });
       }
 
-      // Gestion origin (insensible à la casse)
       let finalOriginId = origin;
       const Origin = (await import("../models/origin.model.js")).default;
       if (!finalOriginId || Number.isNaN(Number(finalOriginId))) {
@@ -65,7 +63,6 @@ const beerController = {
         finalOriginId = originObj.id;
       }
 
-      // Gestion supplier (insensible à la casse)
       let finalSupplierId = req.body.supplierId;
       const Supplier = (await import("../models/supplier.model.js")).default;
       if (!finalSupplierId || Number.isNaN(Number(finalSupplierId))) {

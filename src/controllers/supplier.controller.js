@@ -36,7 +36,6 @@ const supplierController = {
             if (!name || !adress) {
                 return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'un fournisseur." });
             }
-            // Recherche insensible à la casse
             const supplierNom = name.trim();
             const supplier = await Supplier.findOne({
                 where: sequelize.where(
