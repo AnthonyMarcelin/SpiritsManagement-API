@@ -17,11 +17,15 @@ import authRouter from "./src/routers/auth.router.js";
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://spiritsmanagement-api-production.up.railway.app",
+  "http://localhost:4200"
+]
+
 app.use(cors({
   origin:
-  ["http://localhost:5173",
-  "URL_RAILWAY",
-  "http://localhost:4200"],
+  allowedOrigins,
   credentials:true,
 }))
 
@@ -40,6 +44,9 @@ app.use("/api/origin", originRouter);
 app.use("/api/supplier", supplierRouter);
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter)
+
+// Export for tests
+export default app;
 
 app.listen(process.env.PORT, () => {
   console.log(`Serveur lançé sur le port ${process.env.PORT}`);

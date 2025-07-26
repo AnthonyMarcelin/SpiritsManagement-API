@@ -1,5 +1,5 @@
-import sequelize from "../database/client.js";
 import { DataTypes, Model } from "sequelize";
+import sequelize from "../database/client.js";
 
 export default class User extends Model {}
 
@@ -28,6 +28,22 @@ User.init(
     isAdmin: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+    },
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+    },
+    verificationToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    resetPasswordToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    resetPasswordExpires: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
   },
   {

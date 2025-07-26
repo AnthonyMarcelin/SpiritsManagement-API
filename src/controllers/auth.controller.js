@@ -1,6 +1,8 @@
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
+import verificationToken from "../utils/verificationToken.js";
+import { sendPasswordResetEmail, sendVerificationEmail, sendPasswordChangeConfirmation } from "../utils/nodemailer/authEmailService.js";
 
 const jwtSecretKey = process.env.JWT_SECRET;
 
@@ -16,35 +18,142 @@ const authController = {
 				return res.status(409).json({ error: "User already exists" });
 			}
 			const hashedPassword = await argon2.hash(password);
+			const emailVerificationToken = verificationToken.generateVerificationToken();
+
 			const newUser = await User.create({
 				pseudo,
 				firstname,
 				lastname,
 				email,
 				password: hashedPassword,
-				isAdmin: false
+				isAdmin: false,
+				isVerified: false,
+				verificationToken: emailVerificationToken,
 			});
 
-	  const token = jwt.sign(
-		{ id: newUser.id, email: newUser.email, isAdmin: newUser.isAdmin },
-		jwtSecretKey,
-		{
-		  expiresIn: "1h",
-		}
-	  );
+			await sendVerificationEmail(email, firstname, emailVerificationToken);
 
-	  res.cookie("accessToken", token, {
-		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
-		sameSite: "strict",
-		path: "/",
-		maxAge: 60 * 60 * 1000,
-	  });
+
+
+	//   const token = jwt.sign(
+	// 	{ id: newUser.id, email: newUser.email, isAdmin: newUser.isAdmin },
+	// 	jwtSecretKey,
+	// 	{
+	// 	  expiresIn: "1h",
+	// 	}
+	//   );
+
+	//   res.cookie("accessToken", token, {
+	// 	httpOnly: true,
+	// 	secure: process.env.NODE_ENV === "production",
+	// 	sameSite: "strict",
+	// 	path: "/",
+	// 	maxAge: 60 * 60 * 1000,
+	//   });
 
 	  // Don't return password
 	  const userObj = newUser.get({ plain: true });
 	  delete userObj.password;
-	  return res.status(201).json({ user: userObj, token });
+	  delete userObj.verificationToken;
+	  return res.status(201).json({ message: "Inscription succeed, please verify your email to activate your account.",
+ user: userObj });
+		} catch (error) {
+			return res.status(500).json({ error: error.message });
+		}
+	},
+
+	verifyEmail: async (req, res) => {
+		try {
+			const {token} = req.query;
+			if (!token) {
+				return res.status(400).json({ error: "Token is required" });
+			}
+
+			const user = await User.findOne({ where: { verificationToken: token } });
+
+			if (!user) {
+				return res.status(404).json({ error: "invalid verification token" });
+			}
+
+			if (user.isVerified) {
+				return res.status(400).json({ error: "Email already verified" });
+			}
+
+				await user.update({
+					isVerified: true,
+					verificationToken: null
+				});
+
+
+			return res.status(200).json({ message: "Email verified successfully" });
+
+		} catch (error) {
+			return res.status(500).json({ error: error.message });
+		}
+	},
+
+	forgotPassword: async (req, res) => {
+		try {
+			const {email} = req.body;
+
+			if (!email) {
+				return res.status(400).json({error: "require email"})
+			}
+
+			const user = await User.findOne({where: {email}});
+
+			if (!user) {
+				return res.status(200).json({message: "If email exists, you will receive an email"})
+			}
+
+			const resetToken = verificationToken.generateResetPasswordToken();
+			const resetExpires = new Date(Date.now() + 3600000); // 1 hour
+
+			await user.update({
+				resetPasswordToken: resetToken,
+				resetPasswordExpires: resetExpires
+			});
+
+			await sendPasswordResetEmail(email, resetToken);
+
+			return res.status(200).json({ message: "If email exists, you will receive an email" });
+		} catch (error) {
+			return res.status(500).json({ error: error.message });
+		}
+	},
+
+	resetPassword: async (req, res) => {
+		try {
+			const { token, newPassword } = req.body;
+
+			if (!token || !newPassword) {
+				return res.status(400).json({ error: "Token and new password are required" });
+			}
+
+			const user = await User.findOne({
+				where: {
+					resetPasswordToken: token,
+					resetPasswordExpires: {
+						[User.sequelize.Sequelize.Op.gt]: new Date() // Check validity token
+					}
+				}
+			});
+
+			if (!user) {
+				return res.status(404).json({ error: "Invalid or expired reset token" });
+			}
+
+			const hashedPassword = await argon2.hash(newPassword);
+			await user.update({
+				password: hashedPassword,
+				resetPasswordToken: null,
+				resetPasswordExpires: null
+			});
+
+			// send confirmation email
+			await sendPasswordChangeConfirmation(user.email, user.firstname);
+
+			return res.status(200).json({ message: "Password reset successfully" });
 		} catch (error) {
 			return res.status(500).json({ error: error.message });
 		}
@@ -60,6 +169,12 @@ const authController = {
 			if (!user) {
 				return res.status(404).json({ error: "user not found" });
 			}
+
+			// User non verified cannot login with this condition
+				// if (!user.isVerified) {
+					// 	return res.status(403).json({ error: "Email not verified" });
+					// }
+
 			if (!user.password) {
 				return res.status(400).json({ error: "wrong password" });
 			}
@@ -92,24 +207,23 @@ const authController = {
 		}
 	},
 
-	logout: async (req, res) => {
+		logout: async (req, res) => {
+			res.clearCookie("accessToken", {
+				httpOnly: true,
+				sameSite: "strict",
+			});
+			return res.status(200).json({ message: "Déconnexion réussie" });
+		},
 
-		res.clearCookie("accessToken", {
-			httpOnly: true,
-			sameSite: "strict",
-	})
-		return res.status(200).json({ message: "Déconnexion réussie" });
-	},
-
-  me: async (req, res) => {
-	try {
-	  // On retourne les infos de l'utilisateur connecté (hors mot de passe)
-	  const { id, email, pseudo, firstname, lastname, isAdmin } = req.user;
-	  res.json({ id, email, pseudo, firstname, lastname, isAdmin });
-	} catch (error) {
-	  res.status(500).json({ error: "Erreur lors de la récupération du profil" });
-	}
-  },
+		me: async (req, res) => {
+			try {
+				// return auth user without password
+				const { id, email, pseudo, firstname, lastname, isAdmin } = req.user;
+				res.json({ id, email, pseudo, firstname, lastname, isAdmin });
+			} catch (error) {
+				res.status(500).json({ error: "Erreur lors de la récupération du profil" });
+			}
+		},
 };
 
 export default authController;

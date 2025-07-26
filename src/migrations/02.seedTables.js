@@ -165,6 +165,7 @@ const adminUser = await User.create({
   email: "admin@example.com",
   password: adminPassword, // Hashé avec argon2
   isAdmin: true,
+  isVerified: true, // Admin vérifié d'office
 });
 const johnUser = await User.create({
   pseudo: "john",
@@ -173,6 +174,7 @@ const johnUser = await User.create({
   email: "john@example.com",
   password: johnPassword, // Hashé avec argon2
   isAdmin: false,
+  isVerified: true, // Utilisateur de test vérifié
 });
 const janeUser = await User.create({
   pseudo: "jane",
@@ -181,6 +183,7 @@ const janeUser = await User.create({
   email: "jane@example.com",
   password: janePassword, // Hashé avec argon2
   isAdmin: false,
+  isVerified: false, // Utilisateur de test non vérifié pour les tests
 });
 
 console.log("Ajout de whisky de test...");
