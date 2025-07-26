@@ -28,11 +28,25 @@ const beerController = {
   },
 
   createBeer: async (req, res) => {
+
     try {
       const { name, description, review, gender, price, origin, note } = req.body;
       if (!name || !description || !gender || !price || !origin) {
         return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'une bière." });
       }
+
+      // Vérification anti-doublon sur le nom de la bière (insensible à la casse)
+      const beerNameNorm = name.trim();
+      const existingBeer = await Beer.findOne({
+        where: sequelize.where(
+          sequelize.fn('LOWER', sequelize.col('name')),
+          beerNameNorm.toLowerCase()
+        )
+      });
+      if (existingBeer) {
+        return res.status(409).json({ error: "Une bière avec ce nom existe déjà.", beer: existingBeer });
+      }
+
       // Gestion origin (insensible à la casse)
       let finalOriginId = origin;
       const Origin = (await import("../models/origin.model.js")).default;

@@ -52,6 +52,18 @@ const whiskyController = {
         return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'un whisky." });
       }
 
+      // Vérification anti-doublon sur le nom du whisky (insensible à la casse)
+      const whiskyNameNorm = name.trim();
+      const existingWhisky = await Whisky.findOne({
+        where: sequelize.where(
+          sequelize.fn('LOWER', sequelize.col('name')),
+          whiskyNameNorm.toLowerCase()
+        )
+      });
+      if (existingWhisky) {
+        return res.status(409).json({ error: "Un whisky avec ce nom existe déjà.", whisky: existingWhisky });
+      }
+
       // Gestion labelId (insensible à la casse)
       let finalLabelId = labelId;
       if (!finalLabelId || Number.isNaN(Number(finalLabelId))) {

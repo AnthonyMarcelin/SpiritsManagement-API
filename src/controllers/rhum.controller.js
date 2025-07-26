@@ -29,11 +29,25 @@ const rhumController = {
   },
 
   createRhum: async (req, res) => {
+
     try {
       const { name, description, review, gender, price, origin, note } = req.body;
       if (!name || !description || !gender || !price || !origin) {
         return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'un rhum." });
       }
+
+// Vérification anti-doublon sur le nom du rhum (insensible à la casse)
+      const rhumNameNorm = name.trim();
+      const existingRhum = await Rhum.findOne({
+        where: sequelize.where(
+          sequelize.fn('LOWER', sequelize.col('name')),
+          rhumNameNorm.toLowerCase()
+        )
+      });
+      if (existingRhum) {
+        return res.status(409).json({ error: "Un rhum avec ce nom existe déjà.", rhum: existingRhum });
+      }
+
       // Gestion origin (insensible à la casse)
       let finalOriginId = origin;
       const Origin = (await import("../models/origin.model.js")).default;
