@@ -1,5 +1,6 @@
 import Whisky from "../models/whisky.model.js";
 import Type from "../models/type.model.js";
+import sequelize from "../database/client.js";
 
 const whiskyController = {
   getAllWhisky: async (req, res) => {
@@ -30,6 +31,8 @@ const whiskyController = {
 
   createWhisky: async (req, res) => {
     try {
+      console.log("[WHISKY] Création demandée par :", req.user);
+      console.log("[WHISKY] Body reçu :", req.body);
       const {
         name,
         description,
@@ -37,14 +40,74 @@ const whiskyController = {
         price,
         labelId,
         originId,
+        originName,
         supplierId,
+        supplierName,
         peatLevelId,
         typeId,
         note
       } = req.body;
-      if (!name || !description || !price || !labelId || !originId || !supplierId || !peatLevelId || !typeId) {
+      if (!name || !description || !price || !labelId || (!originId && !originName) || (!supplierId && !supplierName) || !peatLevelId || !typeId) {
+        console.log("[WHISKY] Champs obligatoires manquants !");
         return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'un whisky." });
       }
+
+      // Gestion labelId (insensible à la casse)
+      let finalLabelId = labelId;
+      if (!finalLabelId || Number.isNaN(Number(finalLabelId))) {
+        const Label = (await import("../models/label.model.js")).default;
+        const labelNameRaw = req.body.labelName || labelId;
+        const labelName = labelNameRaw.trim();
+        let label = await Label.findOne({
+          where: sequelize.where(
+            sequelize.fn('LOWER', sequelize.col('name')),
+            labelName.toLowerCase()
+          )
+        });
+        if (!label) {
+          label = await Label.create({ name: labelName });
+        }
+        finalLabelId = label.id;
+      }
+      let finalOriginId = originId;
+      const Origin = (await import("../models/origin.model.js")).default;
+      if (!finalOriginId || Number.isNaN(Number(finalOriginId))) {
+        // On normalise la recherche en minuscule
+        const originCountryRaw = originName || originId;
+        const originCountry = originCountryRaw.trim();
+        let origin = await Origin.findOne({
+          where: sequelize.where(
+            sequelize.fn('LOWER', sequelize.col('country')),
+            originCountry.toLowerCase()
+          )
+        });
+        if (!origin) {
+          origin = await Origin.create({ country: originCountry });
+          console.log(`[WHISKY] Nouvelle origin créée: ${originCountry}`);
+        }
+        finalOriginId = origin.id;
+      }
+
+      // Gestion supplierId (insensible à la casse)
+      let finalSupplierId = supplierId;
+      const Supplier = (await import("../models/supplier.model.js")).default;
+      if (!finalSupplierId || Number.isNaN(Number(finalSupplierId))) {
+        // On normalise la recherche en minuscule
+        const supplierNomRaw = supplierName || supplierId;
+        const supplierNom = supplierNomRaw.trim();
+        let supplier = await Supplier.findOne({
+          where: sequelize.where(
+            sequelize.fn('LOWER', sequelize.col('name')),
+            supplierNom.toLowerCase()
+          )
+        });
+        if (!supplier) {
+          supplier = await Supplier.create({ name: supplierNom });
+          console.log(`[WHISKY] Nouveau supplier créé: ${supplierNom}`);
+        }
+        finalSupplierId = supplier.id;
+      }
+
       let photoPath = null;
       if (req.file) {
         photoPath = req.file.path;
@@ -54,18 +117,19 @@ const whiskyController = {
         description,
         review,
         price,
-        labelId,
-        originId,
-        supplierId,
+        labelId: finalLabelId,
+        originId: finalOriginId,
+        supplierId: finalSupplierId,
         peatLevelId,
         typeId,
         note,
         photo: photoPath,
         userId: req.user.id, // Associer le whisky à l'utilisateur connecté
       });
+      console.log("[WHISKY] Whisky créé :", newWhisky);
       return res.status(201).json(newWhisky);
     } catch (error) {
-      console.error(error);
+      console.error("[WHISKY] Erreur création whisky :", error);
       return res.status(500).json({ error: error.message });
     }
   },

@@ -1,4 +1,5 @@
 import Supplier from "../models/supplier.model.js";
+import sequelize from "../database/client.js";
 
 const supplierController = {
 
@@ -35,7 +36,18 @@ const supplierController = {
             if (!name || !adress) {
                 return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'un fournisseur." });
             }
-            const newSupplier = await Supplier.create({ name, adress });
+            // Recherche insensible à la casse
+            const supplierNom = name.trim();
+            const supplier = await Supplier.findOne({
+                where: sequelize.where(
+                    sequelize.fn('LOWER', sequelize.col('name')),
+                    supplierNom.toLowerCase()
+                )
+            });
+            if (supplier) {
+                return res.status(200).json(supplier);
+            }
+            const newSupplier = await Supplier.create({ name: supplierNom, adress });
             return res.status(201).json(newSupplier);
         } catch (error) {
             return res.status(500).json({ error: error.message });

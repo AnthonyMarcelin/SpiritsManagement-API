@@ -1,4 +1,5 @@
 import Label from "../models/label.model.js";
+import sequelize from "../database/client.js";
 
 const labelController = {
   getAllLabel: async (req, res) => {
@@ -33,7 +34,17 @@ const labelController = {
           error: "Missing body parameter: 'name' or 'color'.",
         });
       }
-      const newLabel = await Label.create({ name, color });
+      const nameNorm = name.trim();
+      const label = await Label.findOne({
+        where: sequelize.where(
+          sequelize.fn('LOWER', sequelize.col('name')),
+          nameNorm.toLowerCase()
+        )
+      });
+      if (label) {
+        return res.status(200).json(label);
+      }
+      const newLabel = await Label.create({ name: nameNorm, color });
       return res.status(201).json(newLabel);
     } catch (error) {
       return res.status(500).json({ error: error.message });

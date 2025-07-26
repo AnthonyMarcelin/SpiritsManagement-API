@@ -184,7 +184,12 @@ const authController = {
 			}
 
 			const token = jwt.sign(
-				{id: user.id, email: user.email, isAdmin: user.isAdmin},
+				{
+					id: user.id,
+					email: user.email,
+					isAdmin: user.isAdmin,
+					isVerified: user.isVerified
+				},
 				jwtSecretKey,
 				{
 					expiresIn: "1h",

@@ -1,4 +1,5 @@
 import Origin from "../models/origin.model.js";
+import sequelize from "../database/client.js";
 
 const originController = {
   getAllOrigin: async (req, res) => {
@@ -31,7 +32,17 @@ const originController = {
       if (!country) {
         return res.status(400).json({ error: "Le champ 'country' est requis." });
       }
-      const newCountry = await Origin.create({ country });
+      const countryNorm = country.trim();
+      const origin = await Origin.findOne({
+        where: sequelize.where(
+          sequelize.fn('LOWER', sequelize.col('country')),
+          countryNorm.toLowerCase()
+        )
+      });
+      if (origin) {
+        return res.status(200).json(origin);
+      }
+      const newCountry = await Origin.create({ country: countryNorm });
       return res.status(201).json(newCountry);
     } catch (error) {
       return res.status(500).json({ error: error.message });

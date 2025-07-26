@@ -1,3 +1,4 @@
+import sequelize from "../database/client.js";
 import Beer from "../models/beer.model.js";
 import Type from "../models/type.model.js";
 
@@ -32,6 +33,42 @@ const beerController = {
       if (!name || !description || !gender || !price || !origin) {
         return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'une bière." });
       }
+      // Gestion origin (insensible à la casse)
+      let finalOriginId = origin;
+      const Origin = (await import("../models/origin.model.js")).default;
+      if (!finalOriginId || Number.isNaN(Number(finalOriginId))) {
+        const originCountryRaw = req.body.originName || origin;
+        const originCountry = originCountryRaw.trim();
+        let originObj = await Origin.findOne({
+          where: sequelize.where(
+            sequelize.fn('LOWER', sequelize.col('country')),
+            originCountry.toLowerCase()
+          )
+        });
+        if (!originObj) {
+          originObj = await Origin.create({ country: originCountry });
+        }
+        finalOriginId = originObj.id;
+      }
+
+      // Gestion supplier (insensible à la casse)
+      let finalSupplierId = req.body.supplierId;
+      const Supplier = (await import("../models/supplier.model.js")).default;
+      if (!finalSupplierId || Number.isNaN(Number(finalSupplierId))) {
+        const supplierNomRaw = req.body.supplierName || req.body.supplierId;
+        const supplierNom = supplierNomRaw ? supplierNomRaw.trim() : "";
+        let supplierObj = await Supplier.findOne({
+          where: sequelize.where(
+            sequelize.fn('LOWER', sequelize.col('name')),
+            supplierNom.toLowerCase()
+          )
+        });
+        if (!supplierObj) {
+          supplierObj = await Supplier.create({ name: supplierNom });
+        }
+        finalSupplierId = supplierObj.id;
+      }
+
       let photoPath = null;
       if (req.file) {
         photoPath = req.file.path;
@@ -42,7 +79,8 @@ const beerController = {
         review,
         gender,
         price,
-        origin,
+        origin: finalOriginId,
+        supplierId: finalSupplierId,
         note,
         photo: photoPath,
         userId: req.user.id,

@@ -1,3 +1,4 @@
+import sequelize from "../database/client.js";
 import Type from "../models/type.model.js";
 
 const typeController = {
@@ -30,7 +31,17 @@ const typeController = {
       if (!name) {
         return res.status(400).json({ error: "Le champ 'name' est requis." });
       }
-      const type = await Type.create({ name, forWhisky, forRhum, forBeer });
+      const nameNorm = name.trim();
+      const typeObj = await Type.findOne({
+        where: sequelize.where(
+          sequelize.fn('LOWER', sequelize.col('name')),
+          nameNorm.toLowerCase()
+        )
+      });
+      if (typeObj) {
+        return res.status(200).json(typeObj);
+      }
+      const type = await Type.create({ name: nameNorm, forWhisky, forRhum, forBeer });
       return res.status(201).json(type);
     } catch (err) {
       return res.status(500).json({ error: err.message });
