@@ -50,12 +50,12 @@ const nonTourbePeat = await PeatLevel.findOne({
 });
 
 // Types (avec filtrage par alcool)
-const singleMalt = await ensureType("single malt", { for_whisky: true });
-const rhumBlanc = await ensureType("blanc", { for_rhum: true });
-await ensureType("blend", { for_whisky: true });
-await ensureType("ambré", { for_rhum: true });
-await ensureType("blonde", { for_beer: true });
-await ensureType("brune", { for_beer: true });
+const singleMalt = await ensureType("single malt", { forWhisky: true });
+const rhumBlanc = await ensureType("blanc", { forRhum: true });
+await ensureType("blend", { forWhisky: true });
+await ensureType("ambré", { forRhum: true });
+await ensureType("blonde", { forBeer: true });
+await ensureType("brune", { forBeer: true });
 
 // Types spécifiques whisky
 const whiskyTypes = [
@@ -88,7 +88,7 @@ const whiskyTypes = [
   "World Whisky",
 ];
 await Promise.all(
-  whiskyTypes.map((typeName) => ensureType(typeName, { for_whisky: true }))
+  whiskyTypes.map((typeName) => ensureType(typeName, { forWhisky: true }))
 );
 
 // Types spécifiques rhum (création AVANT toute utilisation)
@@ -133,13 +133,74 @@ const rhumTypes = [
   "Finish Vin Blanc",
 ];
 await Promise.all(
-  rhumTypes.map((typeName) => ensureType(typeName, { for_rhum: true }))
+  rhumTypes.map((typeName) => ensureType(typeName, { forRhum: true }))
 );
 
 // Types spécifiques bière (création AVANT toute utilisation)
-const beerTypes = ["IPA (India Pale Ale)", "Hefeweizen", "Stout", "Punk IPA"];
+const beerTypes = [
+  "Pilsner",
+  "Helles",
+  "Vienna Lager",
+  "Amber Lager",
+  "Dunkel",
+  "Schwarzbier",
+  "Bock",
+  "Doppelbock",
+  "Eisbock",
+  "Pale Ale",
+  "IPA (India Pale Ale)",
+  "Double IPA",
+  "NEIPA",
+  "Session IPA",
+  "American Pale Ale",
+  "Blonde Ale",
+  "Amber Ale",
+  "Red Ale",
+  "Brown Ale",
+  "Scotch Ale",
+  "Barleywine",
+  "Porter",
+  "Stout",
+  "Milk Stout",
+  "Oatmeal Stout",
+  "Imperial Stout",
+  "Witbier",
+  "Hefeweizen",
+  "Dunkelweizen",
+  "Weizenbock",
+  "Berliner Weisse",
+  "Gose",
+  "Saison",
+  "Bière de Garde",
+  "Lambic",
+  "Gueuze",
+  "Kriek",
+  "Fruit Lambic",
+  "Rauchbier",
+  "Baltic Porter",
+  "Bière aux fruits",
+  "Bière épicée",
+  "Bière au miel",
+  "Bière fumée",
+  "Bière forte",
+  "Bière légère",
+  "Bière blanche",
+  "Bière blonde",
+  "Bière ambrée",
+  "Bière brune",
+  "Bière noire",
+  "Bière acide",
+  "Bière fruitée",
+  "Bière ronde",
+  "Bière sèche",
+  "Bière sucrée",
+  "Bière vieilli en fût",
+  "Bière sans alcool",
+  "Bière bio",
+  "Bière expérimentale"
+];
 await Promise.all(
-  beerTypes.map((typeName) => ensureType(typeName, { for_beer: true }))
+  beerTypes.map((typeName) => ensureType(typeName, { forBeer: true }))
 );
 
 // Origines (à placer avant toute utilisation)
