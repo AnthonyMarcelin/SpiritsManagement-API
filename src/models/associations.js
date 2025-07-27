@@ -168,13 +168,14 @@ Beer.belongsTo(Supplier, {
   foreignKey: { name: "supplierId", field: "supplier_id" },
   as: "supplier",
 });
-User.hasMany(Whisky, { foreignKey: "userId", as: "whiskies" });
+
+User.hasMany(Whisky, { foreignKey: "userId", as: "whiskies", onDelete: "CASCADE" });
 Whisky.belongsTo(User, { foreignKey: "userId", as: "user" });
 
-User.hasMany(Rhum, { foreignKey: "userId", as: "rhums" });
+User.hasMany(Rhum, { foreignKey: "userId", as: "rhums", onDelete: "CASCADE" });
 Rhum.belongsTo(User, { foreignKey: "userId", as: "user" });
 
-User.hasMany(Beer, { foreignKey: "userId", as: "beers" });
+User.hasMany(Beer, { foreignKey: "userId", as: "beers", onDelete: "CASCADE" });
 Beer.belongsTo(User, { foreignKey: "userId", as: "user" });
 
 export {

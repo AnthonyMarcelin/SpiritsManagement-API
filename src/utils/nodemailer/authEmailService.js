@@ -12,7 +12,7 @@ const BASE_URL = process.env.FRONT_URL || "http://localhost:3000";
  */
 const sendVerificationEmail = async (email, firstname, verificationToken) => {
     try {
-        const verificationUrl = `${BASE_URL}/verify-email?token=${verificationToken}`;
+        const verificationUrl = `${BASE_URL}/email-verified?token=${verificationToken}`;
 
         const emailSubject = "Vérification de votre compte A ta soif !";
 

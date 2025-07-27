@@ -7,9 +7,10 @@ import { sendPasswordResetEmail, sendVerificationEmail, sendPasswordChangeConfir
 const jwtSecretKey = process.env.JWT_SECRET;
 
 const authController = {
-	register: async (req, res) => {
-		try {
-			const { pseudo, firstname, lastname, email, password } = req.body;
+register: async (req, res) => {
+	try {
+		console.log("Body reçu:", req.body);
+		const { pseudo, firstname, lastname, email, password } = req.body;
 			if (!pseudo || !firstname || !lastname || !email || !password) {
 				return res.status(400).json({ error: "Missing body parameter" });
 			}
@@ -76,16 +77,15 @@ const authController = {
 			}
 
 			if (user.isVerified) {
-				return res.status(400).json({ error: "Email already verified" });
+				return res.status(200).json({ message: "Email déjà vérifié" });
 			}
 
-				await user.update({
-					isVerified: true,
-					verificationToken: null
-				});
+			await user.update({
+				isVerified: true,
+				verificationToken: null
+			});
 
-
-			return res.status(200).json({ message: "Email verified successfully" });
+			return res.status(200).json({ message: "Email vérifié avec succès" });
 
 		} catch (error) {
 			return res.status(500).json({ error: error.message });
