@@ -37,13 +37,16 @@ const beerController = {
 
       const beerNameNorm = name.trim();
       const existingBeer = await Beer.findOne({
-        where: sequelize.where(
-          sequelize.fn('LOWER', sequelize.col('name')),
-          beerNameNorm.toLowerCase()
-        )
+        where: {
+          name: sequelize.where(
+            sequelize.fn('LOWER', sequelize.col('name')),
+            beerNameNorm.toLowerCase()
+          ),
+          userId: req.user.id
+        }
       });
       if (existingBeer) {
-        return res.status(409).json({ error: "Une bière avec ce nom existe déjà.", beer: existingBeer });
+        return res.status(409).json({ error: "Une bière avec ce nom existe déjà dans votre collection.", beer: existingBeer });
       }
 
       let finalOriginId = origin;

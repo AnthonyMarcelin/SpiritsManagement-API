@@ -36,15 +36,20 @@ const rhumController = {
         return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'un rhum." });
       }
 
+      // Uniqueness check: ensures that each user can only have one rum with the same name in their own collection.
+      // This allows different users to have rums with the same name (e.g., Diplomatico) without conflict.
       const rhumNameNorm = name.trim();
       const existingRhum = await Rhum.findOne({
-        where: sequelize.where(
-          sequelize.fn('LOWER', sequelize.col('name')),
-          rhumNameNorm.toLowerCase()
-        )
+        where: {
+          name: sequelize.where(
+            sequelize.fn('LOWER', sequelize.col('name')),
+            rhumNameNorm.toLowerCase()
+          ),
+          userId: req.user.id
+        }
       });
       if (existingRhum) {
-        return res.status(409).json({ error: "Un rhum avec ce nom existe déjà.", rhum: existingRhum });
+        return res.status(409).json({ error: "Un rhum avec ce nom existe déjà dans votre collection.", rhum: existingRhum });
       }
 
       let finalOriginId = origin;

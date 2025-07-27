@@ -53,15 +53,20 @@ const whiskyController = {
         return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'un whisky." });
       }
 
+      // Uniqueness check: ensures that each user can only have one whisky with the same name in their own collection.
+      // This allows different users to have whiskies with the same name (e.g., Aberlour) without conflict.
       const whiskyNameNorm = name.trim();
       const existingWhisky = await Whisky.findOne({
-        where: sequelize.where(
-          sequelize.fn('LOWER', sequelize.col('name')),
-          whiskyNameNorm.toLowerCase()
-        )
+        where: {
+          name: sequelize.where(
+            sequelize.fn('LOWER', sequelize.col('name')),
+            whiskyNameNorm.toLowerCase()
+          ),
+          userId: req.user.id
+        }
       });
       if (existingWhisky) {
-        return res.status(409).json({ error: "Un whisky avec ce nom existe déjà.", whisky: existingWhisky });
+        return res.status(409).json({ error: "Un whisky avec ce nom existe déjà dans votre collection.", whisky: existingWhisky });
       }
 
       let finalLabelId = labelId;
