@@ -116,10 +116,7 @@ const whiskyController = {
         finalSupplierId = supplier.id;
       }
 
-      let photoPath = null;
-      if (req.file) {
-        photoPath = req.file.path;
-      }
+      const photoPath = req.body.photo || (req.file ? req.file.path : null);
       const newWhisky = await Whisky.create({
         name,
         description,
@@ -171,7 +168,9 @@ const whiskyController = {
       if (typeof peatLevelId !== 'undefined') updateData.peatLevelId = peatLevelId;
       if (typeof typeId !== 'undefined') updateData.typeId = typeId;
       if (typeof note !== 'undefined') updateData.note = note;
-      if (req.file) {
+      if (typeof req.body.photo !== 'undefined') {
+        updateData.photo = req.body.photo;
+      } else if (req.file) {
         updateData.photo = req.file.path;
       }
       if (Object.keys(updateData).length === 0) {

@@ -14,6 +14,7 @@ import originRouter from "./src/routers/origin.router.js";
 import supplierRouter from "./src/routers/supplier.router.js";
 import userRouter from "./src/routers/user.router.js";
 import authRouter from "./src/routers/auth.router.js";
+import imagekitRouter from "./src/routers/imagekit.router.js";
 
 const app = express();
 
@@ -43,7 +44,8 @@ app.use("/api/label", labelRouter);
 app.use("/api/origin", originRouter);
 app.use("/api/supplier", supplierRouter);
 app.use("/api/user", userRouter);
-app.use("/api/auth", authRouter)
+app.use("/api/auth", authRouter);
+app.use("/api/imagekit", imagekitRouter);
 
 // Export for tests
 export default app;

@@ -80,10 +80,7 @@ const beerController = {
         finalSupplierId = supplierObj.id;
       }
 
-      let photoPath = null;
-      if (req.file) {
-        photoPath = req.file.path;
-      }
+      const photoPath = req.body.photo || (req.file ? req.file.path : null);
       const newBeer = await Beer.create({
         name,
         description,
@@ -117,7 +114,9 @@ const beerController = {
       if (typeof price !== 'undefined') updateData.price = price;
       if (typeof origin !== 'undefined') updateData.origin = origin;
       if (typeof note !== 'undefined') updateData.note = note;
-      if (req.file) {
+      if (typeof req.body.photo !== 'undefined') {
+        updateData.photo = req.body.photo;
+      } else if (req.file) {
         updateData.photo = req.file.path;
       }
       if (Object.keys(updateData).length === 0) {

@@ -10,7 +10,7 @@ const beerRouter = express.Router();
 
 beerRouter.use(verifyToken);
 
-beerRouter.get("/", verifyToken, beerController.getAllBeer);
+beerRouter.get("/",beerController.getAllBeer);
 beerRouter.get("/:id", beerController.getBeerById);
 beerRouter.get("/types", beerController.getBeerTypes);
 beerRouter.post("/", validateBody(beerSchema), upload.single("photo"), verifyEmailConfirmed, beerController.createBeer);

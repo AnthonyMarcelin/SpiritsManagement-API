@@ -39,7 +39,7 @@ const userController = {
       if (!req.user.isAdmin && req.user.id !== Number(req.params.id)) {
         return res.status(403).json({ error: "Accès interdit" });
       }
-      const { pseudo, firstname, lastname, email, password } = req.body;
+        const { pseudo, firstname, lastname, email, password } = req.body;
       const updateData = {};
       if (typeof pseudo !== 'undefined') updateData.pseudo = pseudo;
       if (typeof firstname !== 'undefined') updateData.firstname = firstname;
