@@ -28,6 +28,7 @@ const labelController = {
 
   createLabel: async (req, res) => {
     try {
+      console.log('[LABEL] createLabel - req.user:', req.user);
       const { name, color } = req.body;
       if (!name || !color) {
         return res.status(400).json({
@@ -42,19 +43,24 @@ const labelController = {
         )
       });
       if (label) {
+        console.log('[LABEL] createLabel - label déjà existant:', label.id);
         return res.status(200).json(label);
       }
       const newLabel = await Label.create({ name: nameNorm, color });
+      console.log('[LABEL] createLabel - label créé:', newLabel.id);
       return res.status(201).json(newLabel);
     } catch (error) {
+      console.log('[LABEL] createLabel - erreur:', error);
       return res.status(500).json({ error: error.message });
     }
   },
 
   updateLabel: async (req, res) => {
     try {
+      console.log('[LABEL] updateLabel - req.user:', req.user);
       const label = await Label.findByPk(req.params.id);
       if (!label) {
+        console.log('[LABEL] updateLabel - label non trouvé:', req.params.id);
         return res.status(404).json({ error: "Label non trouvé" });
       }
       const { name, color } = req.body;
@@ -65,21 +71,27 @@ const labelController = {
         return res.status(400).json({ error: "Aucune donnée à mettre à jour." });
       }
       await label.update(updateData);
+      console.log('[LABEL] updateLabel - label mis à jour:', label.id);
       return res.status(200).json(label);
     } catch (error) {
+      console.log('[LABEL] updateLabel - erreur:', error);
       return res.status(500).json({ error: error.message });
     }
   },
 
   deleteLabel: async (req, res) => {
     try {
+      console.log('[LABEL] deleteLabel - req.user:', req.user);
       const label = await Label.findByPk(req.params.id);
       if (!label) {
+        console.log('[LABEL] deleteLabel - label non trouvé:', req.params.id);
         return res.status(404).json({ error: "Label non trouvé" });
       }
       await label.destroy();
+      console.log('[LABEL] deleteLabel - label supprimé:', label.id);
       return res.status(204).end();
     } catch (error) {
+      console.log('[LABEL] deleteLabel - erreur:', error);
       return res.status(500).json({ error: error.message });
     }
   },

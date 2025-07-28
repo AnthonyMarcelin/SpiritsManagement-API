@@ -8,7 +8,7 @@ const peatLevelRouter = express.Router();
 peatLevelRouter.get("/", verifyToken, peatLevelController.getAllPeatLevel);
 peatLevelRouter.get("/:id", peatLevelController.getPeatLevelById);
 
-peatLevelRouter.use(requireAdmin);
+peatLevelRouter.use(verifyToken, requireAdmin);
 peatLevelRouter.post("/", peatLevelController.createPeatLevel);
 peatLevelRouter.put("/:id", peatLevelController.updatePeatLevel);
 peatLevelRouter.delete("/:id", peatLevelController.deletePeatLevel);

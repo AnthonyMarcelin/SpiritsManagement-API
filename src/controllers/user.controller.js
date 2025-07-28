@@ -61,15 +61,27 @@ const userController = {
 
   deleteUser: async (req, res) => {
     try {
+      console.log('[USER] deleteUser - req.user:', req.user);
       const user = await User.findByPk(req.params.id);
-      if (!user) return res.status(404).json({ error: "Not found" });
-      // Seul l'admin ou le user concerné peut supprimer
-      if (!req.user.isAdmin && req.user.id !== Number(req.params.id)) {
+      if (!user) {
+        console.log('[USER] deleteUser - user not found:', req.params.id);
+        return res.status(404).json({ error: "Not found" });
+      }
+      const isSelf = req.user.id === Number(req.params.id);
+      console.log('[USER] deleteUser - isAdmin:', req.user.isAdmin, '| isSelf:', isSelf);
+      if (!req.user.isAdmin && !isSelf) {
+        console.log('[USER] deleteUser - accès interdit');
         return res.status(403).json({ error: "Accès interdit" });
       }
+      if (req.user.isAdmin && isSelf) {
+        console.log('[USER] deleteUser - admin ne peut pas se supprimer lui-même');
+        return res.status(403).json({ error: "Un admin ne peut pas supprimer son propre compte" });
+      }
       await user.destroy();
+      console.log('[USER] deleteUser - user supprimé:', user.id);
       return res.status(204).end();
     } catch (error) {
+      console.log('[USER] deleteUser - erreur:', error);
       return res.status(500).json({ error: error.message });
     }
   },

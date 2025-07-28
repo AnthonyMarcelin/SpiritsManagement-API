@@ -8,7 +8,7 @@ const typeRouter = express.Router();
 typeRouter.get("/", verifyToken, typeController.getAllType);
 typeRouter.get("/:id", typeController.getTypeById);
 
-typeRouter.use(requireAdmin);
+typeRouter.use(verifyToken, requireAdmin);
 typeRouter.post("/", typeController.createType);
 typeRouter.put("/:id", typeController.updateType);
 typeRouter.delete("/:id", typeController.deleteType);
