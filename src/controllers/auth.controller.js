@@ -92,6 +92,28 @@ register: async (req, res) => {
 		}
 	},
 
+		resendVerification: async (req, res) => {
+		try {
+			const { email } = req.body;
+			if (!email) {
+				return res.status(400).json({ error: "Email is required" });
+			}
+			const user = await User.findOne({ where: { email } });
+			if (!user) {
+				return res.status(404).json({ error: "User not found" });
+			}
+			if (user.isVerified) {
+				return res.status(400).json({ error: "Account already verified" });
+			}
+			const newToken = verificationToken.generateVerificationToken();
+			await user.update({ verificationToken: newToken });
+			await sendVerificationEmail(user.email, user.firstname, newToken);
+			return res.status(200).json({ message: "Verification email resent" });
+		} catch (error) {
+			return res.status(500).json({ error: error.message });
+		}
+	},
+
 	forgotPassword: async (req, res) => {
 		try {
 			const {email} = req.body;
@@ -109,12 +131,16 @@ register: async (req, res) => {
 			const resetToken = verificationToken.generateResetPasswordToken();
 			const resetExpires = new Date(Date.now() + 3600000); // 1 hour
 
+			console.log("[FORGOT PASSWORD] Génération du token:", { email, resetToken, resetExpires });
+
 			await user.update({
 				resetPasswordToken: resetToken,
 				resetPasswordExpires: resetExpires
 			});
 
+			console.log("[FORGOT PASSWORD] Token enregistré en BDD, envoi du mail...");
 			await sendPasswordResetEmail(email, resetToken);
+			console.log("[FORGOT PASSWORD] Appel à sendPasswordResetEmail terminé");
 
 			return res.status(200).json({ message: "If email exists, you will receive an email" });
 		} catch (error) {
@@ -125,6 +151,7 @@ register: async (req, res) => {
 	resetPassword: async (req, res) => {
 		try {
 			const { token, newPassword } = req.body;
+			console.log("[RESET PASSWORD] Requête reçue:", { token, newPassword });
 
 			if (!token || !newPassword) {
 				return res.status(400).json({ error: "Token and new password are required" });
@@ -138,17 +165,20 @@ register: async (req, res) => {
 					}
 				}
 			});
+			console.log("[RESET PASSWORD] Utilisateur trouvé:", user ? user.email : null);
 
 			if (!user) {
 				return res.status(404).json({ error: "Invalid or expired reset token" });
 			}
 
 			const hashedPassword = await argon2.hash(newPassword);
+			console.log("[RESET PASSWORD] Nouveau hash:", hashedPassword);
 			await user.update({
 				password: hashedPassword,
 				resetPasswordToken: null,
 				resetPasswordExpires: null
 			});
+			console.log("[RESET PASSWORD] Mot de passe mis à jour en BDD");
 
 			// send confirmation email
 			await sendPasswordChangeConfirmation(user.email, user.firstname);
