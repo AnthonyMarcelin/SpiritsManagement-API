@@ -53,6 +53,7 @@ const sendVerificationEmail = async (email, firstname, verificationToken) => {
 const sendPasswordResetEmail = async (email, resetToken) => {
     try {
         const resetUrl = `${BASE_URL}/reset-password?token=${resetToken}`;
+        console.log("[sendPasswordResetEmail] Appel avec :", { email, resetToken, resetUrl });
 
         const emailSubject = "Réinitialisation de votre mot de passe - A ta soif !";
 
@@ -80,9 +81,11 @@ const sendPasswordResetEmail = async (email, resetToken) => {
             true
         );
 
-        return await sendEmail(email, emailSubject, emailText, emailHtml);
+        const result = await sendEmail(email, emailSubject, emailText, emailHtml);
+        console.log("[sendPasswordResetEmail] Résultat de sendEmail:", result);
+        return result;
     } catch (error) {
-        console.error("Error sending password reset email:", error);
+        console.error("[sendPasswordResetEmail] Erreur lors de l'envoi:", error);
         throw new Error("Failed to send password reset email");
     }
 };
