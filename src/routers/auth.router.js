@@ -14,6 +14,9 @@ authRouter.get("/verify-email", authController.verifyEmail);
 authRouter.post("/forgot-password", authController.forgotPassword);
 authRouter.post("/reset-password", authController.resetPassword);
 
+
+// Renvoyer l'email de validation
+authRouter.post("/resend-verification", authController.resendVerification);
 // Route to catch connected user
 authRouter.get("/me", verifyToken, authController.me);
 

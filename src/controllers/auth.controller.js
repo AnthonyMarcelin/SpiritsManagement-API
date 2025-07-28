@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 import verificationToken from "../utils/verificationToken.js";
 import { sendPasswordResetEmail, sendVerificationEmail, sendPasswordChangeConfirmation } from "../utils/nodemailer/authEmailService.js";
-import loginLimiter from "../middlewares/rateLimiter.middleware.js";
 
 const jwtSecretKey = process.env.JWT_SECRET;
 
@@ -93,6 +92,28 @@ register: async (req, res) => {
 		}
 	},
 
+		resendVerification: async (req, res) => {
+		try {
+			const { email } = req.body;
+			if (!email) {
+				return res.status(400).json({ error: "Email is required" });
+			}
+			const user = await User.findOne({ where: { email } });
+			if (!user) {
+				return res.status(404).json({ error: "User not found" });
+			}
+			if (user.isVerified) {
+				return res.status(400).json({ error: "Account already verified" });
+			}
+			const newToken = verificationToken.generateVerificationToken();
+			await user.update({ verificationToken: newToken });
+			await sendVerificationEmail(user.email, user.firstname, newToken);
+			return res.status(200).json({ message: "Verification email resent" });
+		} catch (error) {
+			return res.status(500).json({ error: error.message });
+		}
+	},
+
 	forgotPassword: async (req, res) => {
 		try {
 			const {email} = req.body;
@@ -176,7 +197,7 @@ register: async (req, res) => {
 			}
 			const user = await User.findOne({ where: { email } });
 			if (!user) {
-				return loginLimiter(req, res, () => res.status(404).json({ error: "user not found" }));
+				return res.status(404).json({ error: "user not found" });
 			}
 
 			// User non verified cannot login
@@ -185,11 +206,11 @@ register: async (req, res) => {
 			}
 
 			if (!user.password) {
-				return loginLimiter(req, res, () => res.status(400).json({ error: "wrong password" }));
+				return res.status(400).json({ error: "wrong password" });
 			}
 			const isPasswordValid = await argon2.verify(user.password, password);
 			if (!isPasswordValid) {
-				return loginLimiter(req, res, () => res.status(401).json({ error: "password or email incorrect" }));
+				return res.status(401).json({ error: "password or email incorrect" });
 			}
 
 			const token = jwt.sign(
@@ -213,9 +234,9 @@ register: async (req, res) => {
 				maxAge: 60 * 60 * 1000,
 			});
 
-			const userObj = user.get({ plain: true });
-			delete userObj.password;
-			return res.status(200).json({ user: userObj, token });
+	  const userObj = user.get({ plain: true });
+	  delete userObj.password;
+	  return res.status(200).json({ user: userObj, token });
 		} catch (error) {
 			return res.status(500).json({ error: error.message });
 		}
