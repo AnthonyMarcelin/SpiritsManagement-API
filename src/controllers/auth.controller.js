@@ -252,11 +252,18 @@ register: async (req, res) => {
 
 		me: async (req, res) => {
 			try {
-				// return auth user without password
-				const { id, email, pseudo, firstname, lastname, isAdmin } = req.user;
-				res.json({ id, email, pseudo, firstname, lastname, isAdmin });
+					console.log('[AUTH] me - req.user:', req.user);
+
+			// Fetch the full user from the database
+			const user = await User.findByPk(req.user.id, {
+				attributes: { exclude: ['password', 'verificationToken', 'resetPasswordToken', 'resetPasswordExpires'] }
+			});
+			if (!user) {
+				return res.status(404).json({ error: "User not found" });
+			}
+			res.json(user);
 			} catch (error) {
-				res.status(500).json({ error: "Erreur lors de la récupération du profil" });
+			res.status(500).json({ error: "Error while retrieving profile" });
 			}
 		},
 };

@@ -5,7 +5,10 @@
 virer multer ?
 
 gestion du cache pour la version 2
+description pour v2
+modif du mail dans mon profil pour v2
 
 virer les logs
 
 template mail
+
