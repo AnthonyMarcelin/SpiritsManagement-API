@@ -40,15 +40,13 @@ const whiskyController = {
         review,
         price,
         labelId,
-        originId,
-        originName,
-        supplierId,
-        supplierName,
+        origin,
+        supplier,
         peatLevelId,
         typeId,
         note
       } = req.body;
-      if (!name || !description || !price || !labelId || (!originId && !originName) || (!supplierId && !supplierName) || !peatLevelId || !typeId) {
+      if (!name || !description || !price || !labelId || !origin || !supplier || !peatLevelId || !typeId) {
         console.log("[WHISKY] Champs obligatoires manquants !");
         return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'un whisky." });
       }
@@ -85,41 +83,34 @@ const whiskyController = {
         }
         finalLabelId = label.id;
       }
-      let finalOriginId = originId;
+      let finalOriginId = null; // Initialize finalOriginId
       const Origin = (await import("../models/origin.model.js")).default;
-      if (!finalOriginId || Number.isNaN(Number(finalOriginId))) {
-        const originCountryRaw = originName || originId;
-        const originCountry = originCountryRaw.trim();
-        let origin = await Origin.findOne({
-          where: sequelize.where(
-            sequelize.fn('LOWER', sequelize.col('country')),
-            originCountry.toLowerCase()
-          )
-        });
-        if (!origin) {
-          origin = await Origin.create({ country: originCountry });
-          console.log(`[WHISKY] Nouvelle origin créée: ${originCountry}`);
-        }
-        finalOriginId = origin.id;
+      // Association ou création de l'origine à partir du champ texte
+      let originObj = await Origin.findOne({
+        where: sequelize.where(
+          sequelize.fn('LOWER', sequelize.col('country')),
+          origin.trim().toLowerCase()
+        )
+      });
+      if (!originObj) {
+        originObj = await Origin.create({ country: origin.trim() });
+        console.log(`[WHISKY] Nouvelle origin créée: ${origin.trim()}`);
       }
+      finalOriginId = originObj.id;
 
-      let finalSupplierId = supplierId;
+      // Association ou création du fournisseur à partir du champ texte
       const Supplier = (await import("../models/supplier.model.js")).default;
-      if (!finalSupplierId || Number.isNaN(Number(finalSupplierId))) {
-        const supplierNomRaw = supplierName || supplierId;
-        const supplierNom = supplierNomRaw.trim();
-        let supplier = await Supplier.findOne({
-          where: sequelize.where(
-            sequelize.fn('LOWER', sequelize.col('name')),
-            supplierNom.toLowerCase()
-          )
-        });
-        if (!supplier) {
-          supplier = await Supplier.create({ name: supplierNom });
-          console.log(`[WHISKY] Nouveau supplier créé: ${supplierNom}`);
-        }
-        finalSupplierId = supplier.id;
+      let supplierObj = await Supplier.findOne({
+        where: sequelize.where(
+          sequelize.fn('LOWER', sequelize.col('name')),
+          supplier.trim().toLowerCase()
+        )
+      });
+      if (!supplierObj) {
+        supplierObj = await Supplier.create({ name: supplier.trim() });
+        console.log(`[WHISKY] Nouveau supplier créé: ${supplier.trim()}`);
       }
+      const finalSupplierId = supplierObj.id;
 
       const photoPath = req.body.photo || (req.file ? req.file.path : null);
       const newWhisky = await Whisky.create({

@@ -6,7 +6,7 @@ import requireAdmin from "../middlewares/admin.middleware.js";
 const typeRouter = express.Router();
 
 typeRouter.get("/", verifyToken, typeController.getAllType);
-typeRouter.get("/:id", typeController.getTypeById);
+typeRouter.get("/:id", verifyToken, typeController.getTypeById);
 
 typeRouter.use(verifyToken, requireAdmin);
 typeRouter.post("/", typeController.createType);

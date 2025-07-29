@@ -57,16 +57,6 @@ Beer.init(
       allowNull: false,
       field: 'type_id',
     },
-    genderId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      field: 'gender_id',
-    },
-    natureId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      field: 'nature_id',
-    },
   },
   {
     sequelize,

@@ -37,6 +37,26 @@ Rhum.init(
         key: "id",
       },
     },
+    originId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'origin_id',
+    },
+    supplierId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'supplier_id',
+    },
+    labelId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'label_id',
+    },
+    typeId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'type_id',
+    },
   },
   {
     sequelize,

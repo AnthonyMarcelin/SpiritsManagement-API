@@ -4,6 +4,8 @@ import User from "../models/user.model.js";
 import verificationToken from "../utils/verificationToken.js";
 import { sendPasswordResetEmail, sendVerificationEmail, sendPasswordChangeConfirmation } from "../utils/nodemailer/authEmailService.js";
 
+
+
 const jwtSecretKey = process.env.JWT_SECRET;
 
 const authController = {
@@ -242,30 +244,68 @@ register: async (req, res) => {
 		}
 	},
 
-		logout: async (req, res) => {
-			res.clearCookie("accessToken", {
-				httpOnly: true,
-				sameSite: "strict",
-			});
-			return res.status(200).json({ message: "Déconnexion réussie" });
-		},
+	logout: async (req, res) => {
+		res.clearCookie("accessToken", {
+			httpOnly: true,
+			sameSite: "strict",
+		});
+		return res.status(200).json({ message: "Déconnexion réussie" });
+	},
 
-		me: async (req, res) => {
-			try {
-					console.log('[AUTH] me - req.user:', req.user);
+	me: async (req, res) => {
+		try {
+				console.log('[AUTH] me - req.user:', req.user);
 
-			// Fetch the full user from the database
-			const user = await User.findByPk(req.user.id, {
-				attributes: { exclude: ['password', 'verificationToken', 'resetPasswordToken', 'resetPasswordExpires'] }
-			});
-			if (!user) {
-				return res.status(404).json({ error: "User not found" });
-			}
-			res.json(user);
-			} catch (error) {
-			res.status(500).json({ error: "Error while retrieving profile" });
-			}
-		},
+		// Fetch the full user from the database
+		const user = await User.findByPk(req.user.id, {
+			attributes: { exclude: ['password', 'verificationToken', 'resetPasswordToken', 'resetPasswordExpires'] }
+		});
+		if (!user) {
+			return res.status(404).json({ error: "User not found" });
+		}
+		res.json(user);
+		} catch (error) {
+		res.status(500).json({ error: "Error while retrieving profile" });
+		}
+	},
+
+updateMe: async (req, res) => {
+	try {
+		console.log('[AUTH] updateMe - userId:', req.user.id);
+		console.log('[AUTH] updateMe - body:', req.body);
+		const user = await User.findByPk(req.user.id);
+		if (!user) {
+			return res.status(404).json({ error: 'User not found' });
+		}
+		await user.update(req.body);
+		console.log('[AUTH] updateMe - updated user:', user.get({ plain: true }));
+		res.json({ message: 'Profile updated successfully', user: user.get({ plain: true }) });
+	} catch (error) {
+		console.error('[AUTH] updateMe - error:', error);
+		res.status(500).json({ error: 'Error while updating profile' });
+	}
+},
+
+deleteMe: async (req, res) => {
+	try {
+		console.log('[AUTH] deleteMe - userId:', req.user.id);
+		const user = await User.findByPk(req.user.id);
+		if (!user) {
+			return res.status(404).json({ error: 'User not found' });
+		}
+		await user.destroy();
+		console.log('[AUTH] deleteMe - user deleted');
+		res.clearCookie("accessToken", {
+			httpOnly: true,
+			sameSite: "strict",
+		});
+		res.json({ message: 'Account deleted successfully' });
+	} catch (error) {
+		console.error('[AUTH] deleteMe - error:', error);
+		res.status(500).json({ error: 'Error while deleting account' });
+	}
+},
+
 };
 
 export default authController;

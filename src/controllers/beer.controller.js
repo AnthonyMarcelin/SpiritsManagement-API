@@ -28,10 +28,13 @@ const beerController = {
   },
 
   createBeer: async (req, res) => {
+    console.log('[BEER][POST] req.body:', req.body);
+    console.log('[BEER][POST] req.file:', req.file);
+    console.log('[BEER] req.body reçu:', req.body);
 
     try {
-      const { name, description, review, gender, price, origin, note } = req.body;
-      if (!name || !description || !gender || !price || !origin) {
+      const { name, description, review, price, labelId, origin, supplier, typeId, note } = req.body;
+      if (!name || !description || !price || !labelId || !origin || !supplier || !typeId) {
         return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'une bière." });
       }
 
@@ -49,49 +52,45 @@ const beerController = {
         return res.status(409).json({ error: "Une bière avec ce nom existe déjà dans votre collection.", beer: existingBeer });
       }
 
-      let finalOriginId = origin;
+      // Association ou création de l'origine à partir du champ texte
+      let finalOriginId = null;
       const Origin = (await import("../models/origin.model.js")).default;
-      if (!finalOriginId || Number.isNaN(Number(finalOriginId))) {
-        const originCountryRaw = req.body.originName || origin;
-        const originCountry = originCountryRaw.trim();
-        let originObj = await Origin.findOne({
-          where: sequelize.where(
-            sequelize.fn('LOWER', sequelize.col('country')),
-            originCountry.toLowerCase()
-          )
-        });
-        if (!originObj) {
-          originObj = await Origin.create({ country: originCountry });
-        }
-        finalOriginId = originObj.id;
+      let originObj = await Origin.findOne({
+        where: sequelize.where(
+          sequelize.fn('LOWER', sequelize.col('country')),
+          origin.trim().toLowerCase()
+        )
+      });
+      if (!originObj) {
+        originObj = await Origin.create({ country: origin.trim() });
+        console.log(`[BEER] Nouvelle origin créée: ${origin.trim()}`);
       }
+      finalOriginId = originObj.id;
 
-      let finalSupplierId = req.body.supplierId;
+      // Association ou création du fournisseur à partir du champ texte
       const Supplier = (await import("../models/supplier.model.js")).default;
-      if (!finalSupplierId || Number.isNaN(Number(finalSupplierId))) {
-        const supplierNomRaw = req.body.supplierName || req.body.supplierId;
-        const supplierNom = supplierNomRaw ? supplierNomRaw.trim() : "";
-        let supplierObj = await Supplier.findOne({
-          where: sequelize.where(
-            sequelize.fn('LOWER', sequelize.col('name')),
-            supplierNom.toLowerCase()
-          )
-        });
-        if (!supplierObj) {
-          supplierObj = await Supplier.create({ name: supplierNom });
-        }
-        finalSupplierId = supplierObj.id;
+      let supplierObj = await Supplier.findOne({
+        where: sequelize.where(
+          sequelize.fn('LOWER', sequelize.col('name')),
+          supplier.trim().toLowerCase()
+        )
+      });
+      if (!supplierObj) {
+        supplierObj = await Supplier.create({ name: supplier.trim() });
+        console.log(`[BEER] Nouveau supplier créé: ${supplier.trim()}`);
       }
+      const finalSupplierId = supplierObj.id;
 
       const photoPath = req.body.photo || (req.file ? req.file.path : null);
       const newBeer = await Beer.create({
         name,
         description,
         review,
-        gender,
         price,
-        origin: finalOriginId,
+        labelId,
+        originId: finalOriginId,
         supplierId: finalSupplierId,
+        typeId,
         note,
         photo: photoPath,
         userId: req.user.id,

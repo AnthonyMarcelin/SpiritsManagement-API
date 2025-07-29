@@ -4,6 +4,8 @@ const jwtSecretKey = process.env.JWT_SECRET;
 
 const verifyToken = (req, res, next) => {
 	console.log("[AUTH] Vérification du token...");
+	console.log("[AUTH] Cookies reçus:", req.cookies);
+	console.log("[AUTH] Header Authorization:", req.headers.authorization);
 	let token = req.cookies?.accessToken;
 
 	if (!token && req.headers.authorization?.startsWith("Bearer")) {

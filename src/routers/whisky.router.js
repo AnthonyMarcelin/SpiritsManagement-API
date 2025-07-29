@@ -2,17 +2,19 @@ import express from "express";
 import whiskyController from "../controllers/whisky.controller.js";
 import verifyToken from "../middlewares/auth.middleware.js";
 import upload from "../utils/multerConfig.js";
+import validateBody from "../middlewares/validateBody.middleware.js";
+import whiskySchema from "../schemas/whisky.schema.js";
 import verifyEmailConfirmed from "../middlewares/verifiedEmail.middleware.js";
 
 const whiskyRouter = express.Router();
 
 whiskyRouter.use(verifyToken);
 
-whiskyRouter.get("/", verifyToken, whiskyController.getAllWhisky);
-whiskyRouter.get("/types", verifyToken, whiskyController.getWhiskyTypes);
-whiskyRouter.get("/:id", verifyToken, whiskyController.getWhiskyById);
-whiskyRouter.post("/", verifyToken, upload.single("photo"), verifyEmailConfirmed, whiskyController.createWhisky);
-whiskyRouter.put("/:id", verifyToken, upload.single("photo"), whiskyController.updateWhisky);
-whiskyRouter.delete("/:id", verifyToken, whiskyController.deleteWhisky);
+whiskyRouter.get("/", whiskyController.getAllWhisky);
+whiskyRouter.get("/:id", whiskyController.getWhiskyById);
+whiskyRouter.get("/types", whiskyController.getWhiskyTypes);
+whiskyRouter.post("/", upload.single("photo"), validateBody(whiskySchema), verifyEmailConfirmed, whiskyController.createWhisky);
+whiskyRouter.put("/:id", upload.single("photo"), validateBody(whiskySchema), whiskyController.updateWhisky);
+whiskyRouter.delete("/:id", whiskyController.deleteWhisky);
 
 export default whiskyRouter;

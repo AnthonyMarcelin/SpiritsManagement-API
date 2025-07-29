@@ -13,7 +13,7 @@ beerRouter.use(verifyToken);
 beerRouter.get("/",beerController.getAllBeer);
 beerRouter.get("/:id", beerController.getBeerById);
 beerRouter.get("/types", beerController.getBeerTypes);
-beerRouter.post("/", validateBody(beerSchema), upload.single("photo"), verifyEmailConfirmed, beerController.createBeer);
+beerRouter.post("/", upload.single("photo"), validateBody(beerSchema), verifyEmailConfirmed, beerController.createBeer);
 beerRouter.put("/:id",validateBody(beerSchema), beerController.updateBeer);
 beerRouter.delete("/:id", beerController.deleteBeer);
 

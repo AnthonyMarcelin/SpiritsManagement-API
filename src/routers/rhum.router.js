@@ -10,11 +10,11 @@ const rhumRouter = express.Router();
 
 rhumRouter.use(verifyToken);
 
-rhumRouter.get("/", verifyToken, rhumController.getAllRhum);
+rhumRouter.get("/", rhumController.getAllRhum);
 rhumRouter.get("/:id", rhumController.getRhumById);
 rhumRouter.get("/types", rhumController.getRhumTypes);
-rhumRouter.post("/",validateBody(rhumSchema), upload.single("photo"),verifyEmailConfirmed, rhumController.createRhum);
-rhumRouter.put("/:id",validateBody(rhumSchema), upload.single("photo"), rhumController.updateRhum);
+rhumRouter.post("/", upload.single("photo"), validateBody(rhumSchema), verifyEmailConfirmed, rhumController.createRhum);
+rhumRouter.put("/:id", upload.single("photo"), validateBody(rhumSchema), rhumController.updateRhum);
 rhumRouter.delete("/:id", rhumController.deleteRhum);
 
 export default rhumRouter;

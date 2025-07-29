@@ -7,10 +7,10 @@ const originRouter = express.Router();
 
 originRouter.get("/", verifyToken, originController.getAllOrigin);
 originRouter.get("/:id", originController.getOriginById);
-
-originRouter.use(requireAdmin);
 originRouter.post("/", originController.createOrigin);
 originRouter.put("/:id", originController.updateOrigin);
-originRouter.delete("/:id", originController.deleteCountry);
+
+originRouter.use(requireAdmin);
+originRouter.delete("/:id", originController.deleteOrigin);
 
 export default originRouter;

@@ -6,7 +6,7 @@ import requireAdmin from "../middlewares/admin.middleware.js";
 const peatLevelRouter = express.Router();
 
 peatLevelRouter.get("/", verifyToken, peatLevelController.getAllPeatLevel);
-peatLevelRouter.get("/:id", peatLevelController.getPeatLevelById);
+peatLevelRouter.get("/:id", verifyToken, peatLevelController.getPeatLevelById);
 
 peatLevelRouter.use(verifyToken, requireAdmin);
 peatLevelRouter.post("/", peatLevelController.createPeatLevel);

@@ -33,8 +33,8 @@ const supplierController = {
     createSupplier: async (req, res) => {
         try {
             const { name, adress } = req.body;
-            if (!name || !adress) {
-                return res.status(400).json({ error: "Champs obligatoires manquants pour la création d'un fournisseur." });
+            if (!name) {
+                return res.status(400).json({ error: "Champ obligatoire manquant pour la création d'un fournisseur." });
             }
             const supplierNom = name.trim();
             const supplier = await Supplier.findOne({

@@ -17,7 +17,10 @@ authRouter.post("/reset-password", authController.resetPassword);
 
 // Renvoyer l'email de validation
 authRouter.post("/resend-verification", authController.resendVerification);
+
 // Route to catch connected user
 authRouter.get("/me", verifyToken, authController.me);
+authRouter.put("/me", verifyToken, authController.updateMe);
+authRouter.delete("/me", verifyToken, authController.deleteMe);
 
 export default authRouter;

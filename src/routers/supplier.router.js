@@ -5,7 +5,7 @@ import verifyToken from '../middlewares/auth.middleware.js';
 const supplierRouter = express.Router();
 
 supplierRouter.get("/", verifyToken, supplierController.getAllSupplier);
-supplierRouter.get("/:id", supplierController.getSupplierById);
+supplierRouter.get("/:id", verifyToken, supplierController.getSupplierById);
 
 supplierRouter.use(verifyToken);
 supplierRouter.post("/", supplierController.createSupplier);

@@ -68,7 +68,7 @@ const originController = {
     }
   },
 
-  deleteCountry: async (req, res) => {
+  deleteOrigin: async (req, res) => {
     try {
       const country = await Origin.findByPk(req.params.id);
       if (!country) return res.status(404).json({ error: "Not found" });
