@@ -137,37 +137,48 @@ const whiskyController = {
 
   updateWhisky: async (req, res) => {
     try {
-      const whisky = await Whisky.findByPk(req.params.id);
+      const whisky = await Whisky.findOne({ where: { id: req.params.id, userId: req.user.id } });
       if (!whisky) {
         return res.status(404).json({ error: "Whisky non trouvé" });
       }
-      const {
-        name,
-        description,
-        review,
-        price,
-        labelId,
-        originId,
-        supplierId,
-        peatLevelId,
-        typeId,
-        note
-      } = req.body;
       const updateData = {};
-      if (typeof name !== 'undefined') updateData.name = name;
-      if (typeof description !== 'undefined') updateData.description = description;
-      if (typeof review !== 'undefined') updateData.review = review;
-      if (typeof price !== 'undefined') updateData.price = price;
-      if (typeof labelId !== 'undefined') updateData.labelId = labelId;
-      if (typeof originId !== 'undefined') updateData.originId = originId;
-      if (typeof supplierId !== 'undefined') updateData.supplierId = supplierId;
-      if (typeof peatLevelId !== 'undefined') updateData.peatLevelId = peatLevelId;
-      if (typeof typeId !== 'undefined') updateData.typeId = typeId;
-      if (typeof note !== 'undefined') updateData.note = note;
-      if (typeof req.body.photo !== 'undefined') {
+      // Champs classiques
+      ["name", "description", "review", "price", "labelId", "peatLevelId", "typeId", "note"].forEach(field => {
+        if (typeof req.body[field] !== "undefined") updateData[field] = req.body[field];
+      });
+      // Gestion de la photo (URL ou fichier)
+      if (typeof req.body.photo !== "undefined") {
         updateData.photo = req.body.photo;
       } else if (req.file) {
         updateData.photo = req.file.path;
+      }
+      // Gestion dynamique de origin
+      if (typeof req.body.origin !== "undefined" && req.body.origin.trim() !== "") {
+        const Origin = (await import("../models/origin.model.js")).default;
+        let originObj = await Origin.findOne({
+          where: sequelize.where(
+            sequelize.fn('LOWER', sequelize.col('country')),
+            req.body.origin.trim().toLowerCase()
+          )
+        });
+        if (!originObj) {
+          originObj = await Origin.create({ country: req.body.origin.trim() });
+        }
+        updateData.originId = originObj.id;
+      }
+      // Gestion dynamique de supplier
+      if (typeof req.body.supplier !== "undefined" && req.body.supplier.trim() !== "") {
+        const Supplier = (await import("../models/supplier.model.js")).default;
+        let supplierObj = await Supplier.findOne({
+          where: sequelize.where(
+            sequelize.fn('LOWER', sequelize.col('name')),
+            req.body.supplier.trim().toLowerCase()
+          )
+        });
+        if (!supplierObj) {
+          supplierObj = await Supplier.create({ name: req.body.supplier.trim() });
+        }
+        updateData.supplierId = supplierObj.id;
       }
       if (Object.keys(updateData).length === 0) {
         return res.status(400).json({ error: "Aucune donnée à mettre à jour." });

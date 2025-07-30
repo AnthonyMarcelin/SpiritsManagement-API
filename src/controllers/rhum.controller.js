@@ -109,19 +109,43 @@ const rhumController = {
       if (!rhum) {
         return res.status(404).json({ message: "Rhum non trouvé" });
       }
-      const { name, description, review, gender, price, origin, note } = req.body;
       const updateData = {};
-      if (typeof name !== 'undefined') updateData.name = name;
-      if (typeof description !== 'undefined') updateData.description = description;
-      if (typeof review !== 'undefined') updateData.review = review;
-      if (typeof gender !== 'undefined') updateData.gender = gender;
-      if (typeof price !== 'undefined') updateData.price = price;
-      if (typeof origin !== 'undefined') updateData.origin = origin;
-      if (typeof note !== 'undefined') updateData.note = note;
-      if (typeof req.body.photo !== 'undefined') {
+      ["name", "description", "review", "price", "labelId", "typeId", "note"].forEach(field => {
+        if (typeof req.body[field] !== "undefined") updateData[field] = req.body[field];
+      });
+      // Gestion de la photo (URL ou fichier)
+      if (typeof req.body.photo !== "undefined") {
         updateData.photo = req.body.photo;
       } else if (req.file) {
         updateData.photo = req.file.path;
+      }
+      // Gestion dynamique de origin
+      if (typeof req.body.origin !== "undefined" && req.body.origin.trim() !== "") {
+        const Origin = (await import("../models/origin.model.js")).default;
+        let originObj = await Origin.findOne({
+          where: sequelize.where(
+            sequelize.fn('LOWER', sequelize.col('country')),
+            req.body.origin.trim().toLowerCase()
+          )
+        });
+        if (!originObj) {
+          originObj = await Origin.create({ country: req.body.origin.trim() });
+        }
+        updateData.originId = originObj.id;
+      }
+      // Gestion dynamique de supplier
+      if (typeof req.body.supplier !== "undefined" && req.body.supplier.trim() !== "") {
+        const Supplier = (await import("../models/supplier.model.js")).default;
+        let supplierObj = await Supplier.findOne({
+          where: sequelize.where(
+            sequelize.fn('LOWER', sequelize.col('name')),
+            req.body.supplier.trim().toLowerCase()
+          )
+        });
+        if (!supplierObj) {
+          supplierObj = await Supplier.create({ name: req.body.supplier.trim() });
+        }
+        updateData.supplierId = supplierObj.id;
       }
       if (Object.keys(updateData).length === 0) {
         return res.status(400).json({ error: "Aucune donnée à mettre à jour." });
