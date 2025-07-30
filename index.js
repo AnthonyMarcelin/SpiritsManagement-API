@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 
+import "./src/models/associations.js";
 import whiskyRouter from "./src/routers/whisky.router.js";
 import beerRouter from "./src/routers/beer.router.js";
 import rhumRouter from "./src/routers/rhum.router.js";

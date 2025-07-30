@@ -1,6 +1,9 @@
 import sequelize from "../database/client.js";
 import Rhum from "../models/rhum.model.js";
 import Type from "../models/type.model.js";
+import Origin from "../models/origin.model.js";
+import Supplier from "../models/supplier.model.js";
+import Label from "../models/label.model.js";
 
 const rhumController = {
   getAllRhum: async (req, res) => {
@@ -18,13 +21,28 @@ const rhumController = {
   getRhumById: async (req, res) => {
     try {
       const { id } = req.params;
-      const rhum = await Rhum.findOne({ where: { id, userId: req.user.id } });
+      // Associations importées statiquement avec alias
+      const rhum = await Rhum.findOne({
+        where: { id, userId: req.user.id },
+        include: [
+          { model: Origin, as: 'origin', attributes: ['country'] },
+          { model: Supplier, as: 'supplier', attributes: ['name'] },
+          { model: Label, as: 'label', attributes: ['name'] },
+          { model: Type, as: 'type', attributes: ['name'] }
+        ]
+      });
       if (!rhum) {
         return res.status(404).json({ message: "Rhum non trouvé" });
       }
-      return res.status(200).json(rhum);
+      const data = rhum.toJSON();
+      data.origin = data.origin?.country || '';
+      data.supplier = data.supplier?.name || '';
+      data.label = data.label?.name || '';
+      data.type = data.type?.name || '';
+      return res.status(200).json(data);
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      console.error('[RHUM][GET BY ID] Erreur :', error);
+      return res.status(500).json({ error: error.message, stack: error.stack });
     }
   },
 
@@ -55,7 +73,6 @@ const rhumController = {
 
       // Association ou création de l'origine à partir du champ texte
       let finalOriginId = null;
-      const Origin = (await import("../models/origin.model.js")).default;
       let originObj = await Origin.findOne({
         where: sequelize.where(
           sequelize.fn('LOWER', sequelize.col('country')),
@@ -69,7 +86,6 @@ const rhumController = {
       finalOriginId = originObj.id;
 
       // Association ou création du fournisseur à partir du champ texte
-      const Supplier = (await import("../models/supplier.model.js")).default;
       let supplierObj = await Supplier.findOne({
         where: sequelize.where(
           sequelize.fn('LOWER', sequelize.col('name')),
@@ -105,7 +121,16 @@ const rhumController = {
   updateRhum: async (req, res) => {
     try {
       const { id } = req.params;
-      const rhum = await Rhum.findOne({ where: { id, userId: req.user.id } });
+      // Associations importées statiquement
+      const rhum = await Rhum.findOne({
+        where: { id, userId: req.user.id },
+        include: [
+          { model: Origin, as: 'origin', attributes: ['country'] },
+          { model: Supplier, as: 'supplier', attributes: ['name'] },
+          { model: Label, as: 'label', attributes: ['name'] },
+          { model: Type, as: 'type', attributes: ['name'] }
+        ]
+      });
       if (!rhum) {
         return res.status(404).json({ message: "Rhum non trouvé" });
       }
@@ -121,7 +146,6 @@ const rhumController = {
       }
       // Gestion dynamique de origin
       if (typeof req.body.origin !== "undefined" && req.body.origin.trim() !== "") {
-        const Origin = (await import("../models/origin.model.js")).default;
         let originObj = await Origin.findOne({
           where: sequelize.where(
             sequelize.fn('LOWER', sequelize.col('country')),
@@ -135,7 +159,6 @@ const rhumController = {
       }
       // Gestion dynamique de supplier
       if (typeof req.body.supplier !== "undefined" && req.body.supplier.trim() !== "") {
-        const Supplier = (await import("../models/supplier.model.js")).default;
         let supplierObj = await Supplier.findOne({
           where: sequelize.where(
             sequelize.fn('LOWER', sequelize.col('name')),
@@ -148,10 +171,30 @@ const rhumController = {
         updateData.supplierId = supplierObj.id;
       }
       if (Object.keys(updateData).length === 0) {
-        return res.status(400).json({ error: "Aucune donnée à mettre à jour." });
+      const data = rhum.toJSON();
+      data.origin = data.origin?.country || '';
+      data.supplier = data.supplier?.name || '';
+      data.label = data.label?.name || '';
+      data.type = data.type?.name || '';
+        return res.status(400).json({ error: "Aucune donnée à mettre à jour.", ...data });
       }
       await rhum.update(updateData);
-      return res.status(200).json(rhum);
+      // On recharge l'objet avec les associations pour la réponse
+      const updatedRhum = await Rhum.findOne({
+        where: { id, userId: req.user.id },
+        include: [
+          { model: Origin, as: 'origin', attributes: ['country'] },
+          { model: Supplier, as: 'supplier', attributes: ['name'] },
+          { model: Label, as: 'label', attributes: ['name'] },
+          { model: Type, as: 'type', attributes: ['name'] }
+        ]
+      });
+      const data = updatedRhum.toJSON();
+      data.origin = data.origin?.country || '';
+      data.supplier = data.supplier?.name || '';
+      data.label = data.label?.name || '';
+      data.type = data.type?.name || '';
+      return res.status(200).json(data);
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }

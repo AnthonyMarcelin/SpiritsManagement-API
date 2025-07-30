@@ -14,4 +14,19 @@ const whiskySchema = Joi.object({
   typeId: Joi.number().integer().required(), // choix dans un select
 });
 
+
+export const whiskyUpdateSchema = Joi.object({
+  name: Joi.string().min(2).max(100),
+  description: Joi.string().allow('').max(1000),
+  review: Joi.string().allow('').max(1000),
+  price: Joi.number().positive(),
+  note: Joi.number().min(0).max(10).precision(1).allow(null),
+  photo: Joi.string().allow(''),
+  origin: Joi.string().min(2).max(100),
+  supplier: Joi.string().min(2).max(100),
+  labelId: Joi.number().integer(),
+  peatLevelId: Joi.number().integer(),
+  typeId: Joi.number().integer(),
+});
+
 export default whiskySchema;

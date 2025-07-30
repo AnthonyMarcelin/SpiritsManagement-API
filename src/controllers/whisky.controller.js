@@ -1,6 +1,11 @@
 import Whisky from "../models/whisky.model.js";
 import Type from "../models/type.model.js";
 import sequelize from "../database/client.js";
+import Origin from "../models/origin.model.js";
+import Supplier from "../models/supplier.model.js";
+import Label from "../models/label.model.js";
+
+import PeatLevel from "../models/peatLevel.model.js";
 
 const whiskyController = {
   getAllWhisky: async (req, res) => {
@@ -20,13 +25,29 @@ const whiskyController = {
 
   getWhiskyById: async (req, res) => {
     try {
-      const whisky = await Whisky.findOne({ where: { id: req.params.id, userId: req.user.id } });
+      const whisky = await Whisky.findOne({
+        where: { id: req.params.id, userId: req.user.id },
+        include: [
+          { model: Origin, as: 'origin', attributes: ['country'] },
+          { model: Supplier, as: 'supplier', attributes: ['name'] },
+          { model: Label, as: 'label', attributes: ['name'] },
+          { model: Type, as: 'type', attributes: ['name'] },
+          { model: PeatLevel, as: 'peatLevel', attributes: ['name'] }
+        ]
+      });
       if (!whisky) {
-        return res.status(404).json({ error: "whisky non trouvé" });
+        return res.status(404).json({ error: "Whisky non trouvé" });
       }
-      return res.status(200).json(whisky);
+      const data = whisky.toJSON();
+      data.origin = data.origin?.country || '';
+      data.supplier = data.supplier?.name || '';
+      data.label = data.label?.name || '';
+      data.type = data.type?.name || '';
+      data.peatLevel = data.peatLevel?.name || '';
+      return res.status(200).json(data);
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      console.error('[WHISKY][GET BY ID] Erreur :', error);
+      return res.status(500).json({ error: error.message, stack: error.stack });
     }
   },
 
@@ -69,7 +90,6 @@ const whiskyController = {
 
       let finalLabelId = labelId;
       if (!finalLabelId || Number.isNaN(Number(finalLabelId))) {
-        const Label = (await import("../models/label.model.js")).default;
         const labelNameRaw = req.body.labelName || labelId;
         const labelName = labelNameRaw.trim();
         let label = await Label.findOne({
@@ -84,7 +104,6 @@ const whiskyController = {
         finalLabelId = label.id;
       }
       let finalOriginId = null; // Initialize finalOriginId
-      const Origin = (await import("../models/origin.model.js")).default;
       // Association ou création de l'origine à partir du champ texte
       let originObj = await Origin.findOne({
         where: sequelize.where(
@@ -99,7 +118,6 @@ const whiskyController = {
       finalOriginId = originObj.id;
 
       // Association ou création du fournisseur à partir du champ texte
-      const Supplier = (await import("../models/supplier.model.js")).default;
       let supplierObj = await Supplier.findOne({
         where: sequelize.where(
           sequelize.fn('LOWER', sequelize.col('name')),
@@ -137,12 +155,20 @@ const whiskyController = {
 
   updateWhisky: async (req, res) => {
     try {
-      const whisky = await Whisky.findOne({ where: { id: req.params.id, userId: req.user.id } });
+      const whisky = await Whisky.findOne({
+        where: { id: req.params.id, userId: req.user.id },
+        include: [
+          { model: Origin, as: 'origin', attributes: ['country'] },
+          { model: Supplier, as: 'supplier', attributes: ['name'] },
+          { model: Label, as: 'label', attributes: ['name'] },
+          { model: Type, as: 'type', attributes: ['name'] },
+          { model: PeatLevel, as: 'peatLevel', attributes: ['name'] }
+        ]
+      });
       if (!whisky) {
         return res.status(404).json({ error: "Whisky non trouvé" });
       }
       const updateData = {};
-      // Champs classiques
       ["name", "description", "review", "price", "labelId", "peatLevelId", "typeId", "note"].forEach(field => {
         if (typeof req.body[field] !== "undefined") updateData[field] = req.body[field];
       });
@@ -154,7 +180,6 @@ const whiskyController = {
       }
       // Gestion dynamique de origin
       if (typeof req.body.origin !== "undefined" && req.body.origin.trim() !== "") {
-        const Origin = (await import("../models/origin.model.js")).default;
         let originObj = await Origin.findOne({
           where: sequelize.where(
             sequelize.fn('LOWER', sequelize.col('country')),
@@ -168,7 +193,6 @@ const whiskyController = {
       }
       // Gestion dynamique de supplier
       if (typeof req.body.supplier !== "undefined" && req.body.supplier.trim() !== "") {
-        const Supplier = (await import("../models/supplier.model.js")).default;
         let supplierObj = await Supplier.findOne({
           where: sequelize.where(
             sequelize.fn('LOWER', sequelize.col('name')),
@@ -181,10 +205,33 @@ const whiskyController = {
         updateData.supplierId = supplierObj.id;
       }
       if (Object.keys(updateData).length === 0) {
-        return res.status(400).json({ error: "Aucune donnée à mettre à jour." });
+      const data = whisky.toJSON();
+      data.origin = data.origin?.country || '';
+      data.supplier = data.supplier?.name || '';
+      data.label = data.label?.name || '';
+      data.type = data.type?.name || '';
+      data.peatLevel = data.peatLevel?.name || '';
+        return res.status(400).json({ error: "Aucune donnée à mettre à jour.", ...data });
       }
       await whisky.update(updateData);
-      return res.status(200).json(whisky);
+      // On recharge l'objet avec les associations pour la réponse
+      const updatedWhisky = await Whisky.findOne({
+        where: { id: req.params.id, userId: req.user.id },
+        include: [
+          { model: Origin, as: 'origin', attributes: ['country'] },
+          { model: Supplier, as: 'supplier', attributes: ['name'] },
+          { model: Label, as: 'label', attributes: ['name'] },
+          { model: Type, as: 'type', attributes: ['name'] },
+          { model: PeatLevel, as: 'peatLevel', attributes: ['name'] }
+        ]
+      });
+      const data = updatedWhisky.toJSON();
+      data.origin = data.origin?.country || '';
+      data.supplier = data.supplier?.name || '';
+      data.label = data.label?.name || '';
+      data.type = data.type?.name || '';
+      data.peatLevel = data.peatLevel?.name || '';
+      return res.status(200).json(data);
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }

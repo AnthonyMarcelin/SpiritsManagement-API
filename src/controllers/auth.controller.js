@@ -235,6 +235,8 @@ register: async (req, res) => {
 				path: "/",
 				maxAge: 60 * 60 * 1000,
 			});
+			console.log("[LOGIN] User logged in");
+
 
 	  const userObj = user.get({ plain: true });
 	  delete userObj.password;

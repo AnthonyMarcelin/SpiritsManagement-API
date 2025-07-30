@@ -1,6 +1,9 @@
 import sequelize from "../database/client.js";
 import Beer from "../models/beer.model.js";
 import Type from "../models/type.model.js";
+import Origin from "../models/origin.model.js";
+import Supplier from "../models/supplier.model.js";
+import Label from "../models/label.model.js";
 
 const beerController = {
   getAllBeer: async (req, res) => {
@@ -17,11 +20,24 @@ const beerController = {
 
   getBeerById: async (req, res) => {
     try {
-      const beer = await Beer.findOne({ where: { id: req.params.id, userId: req.user.id } });
+      const beer = await Beer.findOne({
+        where: { id: req.params.id, userId: req.user.id },
+        include: [
+          { model: Origin, as: 'origin', attributes: ['country'] },
+          { model: Supplier, as: 'supplier', attributes: ['name'] },
+          { model: Label, as: 'label', attributes: ['name'] },
+          { model: Type, as: 'type', attributes: ['name'] }
+        ]
+      });
       if (!beer) {
         return res.status(404).json({ error: "Bière non trouvée" });
       }
-      return res.status(200).json(beer);
+      const data = beer.toJSON();
+      data.origin = data.origin?.country || '';
+      data.supplier = data.supplier?.name || '';
+      data.label = data.label?.name || '';
+      data.type = data.type?.name || '';
+      return res.status(200).json(data);
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
@@ -54,7 +70,6 @@ const beerController = {
 
       // Association ou création de l'origine à partir du champ texte
       let finalOriginId = null;
-      const Origin = (await import("../models/origin.model.js")).default;
       let originObj = await Origin.findOne({
         where: sequelize.where(
           sequelize.fn('LOWER', sequelize.col('country')),
@@ -68,7 +83,6 @@ const beerController = {
       finalOriginId = originObj.id;
 
       // Association ou création du fournisseur à partir du champ texte
-      const Supplier = (await import("../models/supplier.model.js")).default;
       let supplierObj = await Supplier.findOne({
         where: sequelize.where(
           sequelize.fn('LOWER', sequelize.col('name')),
@@ -103,7 +117,15 @@ const beerController = {
 
   updateBeer: async (req, res) => {
     try {
-      const beer = await Beer.findOne({ where: { id: req.params.id, userId: req.user.id } });
+      const beer = await Beer.findOne({
+        where: { id: req.params.id, userId: req.user.id },
+        include: [
+          { model: Origin, as: 'origin', attributes: ['country'] },
+          { model: Supplier, as: 'supplier', attributes: ['name'] },
+          { model: Label, as: 'label', attributes: ['name'] },
+          { model: Type, as: 'type', attributes: ['name'] }
+        ]
+      });
       if (!beer) {
         return res.status(404).json({ error: "Bière non trouvée" });
       }
@@ -119,7 +141,6 @@ const beerController = {
       }
       // Gestion dynamique de origin
       if (typeof req.body.origin !== "undefined" && req.body.origin.trim() !== "") {
-        const Origin = (await import("../models/origin.model.js")).default;
         let originObj = await Origin.findOne({
           where: sequelize.where(
             sequelize.fn('LOWER', sequelize.col('country')),
@@ -133,7 +154,6 @@ const beerController = {
       }
       // Gestion dynamique de supplier
       if (typeof req.body.supplier !== "undefined" && req.body.supplier.trim() !== "") {
-        const Supplier = (await import("../models/supplier.model.js")).default;
         let supplierObj = await Supplier.findOne({
           where: sequelize.where(
             sequelize.fn('LOWER', sequelize.col('name')),
@@ -146,10 +166,30 @@ const beerController = {
         updateData.supplierId = supplierObj.id;
       }
       if (Object.keys(updateData).length === 0) {
-        return res.status(400).json({ error: "Aucune donnée à mettre à jour." });
+      const data = beer.toJSON();
+      data.origin = data.origin?.country || '';
+      data.supplier = data.supplier?.name || '';
+      data.label = data.label?.name || '';
+      data.type = data.type?.name || '';
+        return res.status(400).json({ error: "Aucune donnée à mettre à jour.", ...data });
       }
       await beer.update(updateData);
-      return res.status(200).json(beer);
+      // On recharge l'objet avec les associations pour la réponse
+      const updatedBeer = await Beer.findOne({
+        where: { id: req.params.id, userId: req.user.id },
+        include: [
+          { model: Origin, as: 'origin', attributes: ['country'] },
+          { model: Supplier, as: 'supplier', attributes: ['name'] },
+          { model: Label, as: 'label', attributes: ['name'] },
+          { model: Type, as: 'type', attributes: ['name'] }
+        ]
+      });
+      const data = updatedBeer.toJSON();
+      data.origin = data.origin?.country || '';
+      data.supplier = data.supplier?.name || '';
+      data.label = data.label?.name || '';
+      data.type = data.type?.name || '';
+      return res.status(200).json(data);
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
