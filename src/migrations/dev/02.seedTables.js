@@ -10,7 +10,7 @@ import {
   Origin,
   PeatLevel,
   User
-} from "../models/associations.js";
+} from "../../models/associations.js";
 
 // Fonction utilitaire pour garantir l'existence d'un type
 const ensureType = async (name, flags) => {
