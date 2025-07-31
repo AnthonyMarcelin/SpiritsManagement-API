@@ -22,7 +22,8 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "https://spiritsmanagement-api-production.up.railway.app",
-  "http://localhost:4200"
+  "http://localhost:4200",
+  "https://spiritmanagement.up.railway.app"
 ]
 
 app.use(cors({
