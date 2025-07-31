@@ -16,7 +16,7 @@ services:
     restart: always
     environment:
       PG_URL: ${PG_URL_DOCKER}
-      JWT_SECRET: ${JWT_SECRET}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     ports:
       - '3000:3000'
     depends_on:

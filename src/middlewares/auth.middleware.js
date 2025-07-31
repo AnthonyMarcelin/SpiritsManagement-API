@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const jwtSecretKey = process.env.JWT_SECRET;
+const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
 const verifyToken = (req, res, next) => {
 

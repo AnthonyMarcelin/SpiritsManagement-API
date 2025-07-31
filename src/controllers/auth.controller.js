@@ -7,7 +7,7 @@ import verificationToken from "../utils/verificationToken.js";
 
 
 
-const jwtSecretKey = process.env.JWT_SECRET;
+const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
 const authController = {
 register: async (req, res) => {
