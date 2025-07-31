@@ -9,7 +9,7 @@
     "db:create": " node src/migrations/01.createTables.js",
     "db:seed": "node src/migrations/02.seedTables.js",
     "db:reset": "node src/migrations/dev/01.createTables.js && node src/migrations/dev/02.seedTables.js",
-    "db:seed:references": "node src/migrations/01.seedReferences.js",
+    "db:seed:references": "node src/migrations/dev/01.seedReferenceTables.js",
     "test_sequelize": "node src/database/client.js",
     "lint": "eslint . --fix",
     "format": "prettier --write \"**/*.{js,ts,json,md}\"",
