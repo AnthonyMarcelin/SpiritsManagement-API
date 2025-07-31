@@ -1,5 +1,5 @@
-import sendEmail from "./nodemailer.js";
 import createEmailTemplate from "./emailTemplate.js";
+import sendEmail from "./nodemailer.js";
 
 const BASE_URL = process.env.FRONT_URL || "http://localhost:3000";
 
@@ -38,8 +38,11 @@ const sendVerificationEmail = async (email, firstname, verificationToken) => {
         );
 
         return await sendEmail(email, emailSubject, emailText, emailHTML);
+
     } catch (error) {
+
         console.error("Error sending verification email:", error);
+
         throw new Error("Failed to send verification email");
     }
 };
@@ -53,7 +56,6 @@ const sendVerificationEmail = async (email, firstname, verificationToken) => {
 const sendPasswordResetEmail = async (email, resetToken) => {
     try {
         const resetUrl = `${BASE_URL}/reset-password?token=${resetToken}`;
-        console.log("[sendPasswordResetEmail] Appel avec :", { email, resetToken, resetUrl });
 
         const emailSubject = "Réinitialisation de votre mot de passe - A ta soif !";
 
@@ -82,7 +84,7 @@ const sendPasswordResetEmail = async (email, resetToken) => {
         );
 
         const result = await sendEmail(email, emailSubject, emailText, emailHtml);
-        console.log("[sendPasswordResetEmail] Résultat de sendEmail:", result);
+
         return result;
     } catch (error) {
         console.error("[sendPasswordResetEmail] Erreur lors de l'envoi:", error);
@@ -98,6 +100,7 @@ const sendPasswordResetEmail = async (email, resetToken) => {
  */
 const sendPasswordChangeConfirmation = async (email, firstname) => {
     try {
+
         const emailSubject = "Mot de passe modifié - A ta soif !";
 
         const emailContent = `
@@ -127,9 +130,13 @@ const sendPasswordChangeConfirmation = async (email, firstname) => {
         );
 
         return await sendEmail(email, emailSubject, emailText, emailHtml);
+
     } catch (error) {
+
         console.error("Error sending password change confirmation email:", error);
+
         throw new Error("Failed to send password change confirmation email");
+
     }
 };
 

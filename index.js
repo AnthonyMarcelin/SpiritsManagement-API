@@ -1,21 +1,21 @@
 import "dotenv/config";
-import express from "express";
-import cors from "cors";
 import cookieParser from "cookie-parser";
+import cors from "cors";
+import express from "express";
 
 
 import "./src/models/associations.js";
-import whiskyRouter from "./src/routers/whisky.router.js";
+import authRouter from "./src/routers/auth.router.js";
 import beerRouter from "./src/routers/beer.router.js";
-import rhumRouter from "./src/routers/rhum.router.js";
-import peatLevelRouter from "./src/routers/peatLevel.router.js";
-import typeRouter from "./src/routers/type.router.js";
+import imagekitRouter from "./src/routers/imagekit.router.js";
 import labelRouter from "./src/routers/label.router.js";
 import originRouter from "./src/routers/origin.router.js";
+import peatLevelRouter from "./src/routers/peatLevel.router.js";
+import rhumRouter from "./src/routers/rhum.router.js";
 import supplierRouter from "./src/routers/supplier.router.js";
+import typeRouter from "./src/routers/type.router.js";
 import userRouter from "./src/routers/user.router.js";
-import authRouter from "./src/routers/auth.router.js";
-import imagekitRouter from "./src/routers/imagekit.router.js";
+import whiskyRouter from "./src/routers/whisky.router.js";
 
 const app = express();
 

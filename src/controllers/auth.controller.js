@@ -1,8 +1,9 @@
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
+
 import User from "../models/user.model.js";
-import verificationToken from "../utils/verificationToken.js";
 import { sendPasswordResetEmail, sendVerificationEmail, sendPasswordChangeConfirmation } from "../utils/nodemailer/authEmailService.js";
+import verificationToken from "../utils/verificationToken.js";
 
 
 
@@ -11,15 +12,18 @@ const jwtSecretKey = process.env.JWT_SECRET;
 const authController = {
 register: async (req, res) => {
 	try {
-		console.log("Body reçu:", req.body);
 		const { pseudo, firstname, lastname, email, password } = req.body;
+
 			if (!pseudo || !firstname || !lastname || !email || !password) {
 				return res.status(400).json({ error: "Missing body parameter" });
 			}
+
 			const existingUser = await User.findOne({ where: { email } });
+
 			if (existingUser) {
 				return res.status(409).json({ error: "User already exists" });
 			}
+
 			const hashedPassword = await argon2.hash(password);
 			const emailVerificationToken = verificationToken.generateVerificationToken();
 
@@ -37,23 +41,6 @@ register: async (req, res) => {
 			await sendVerificationEmail(email, firstname, emailVerificationToken);
 
 
-
-	//   const token = jwt.sign(
-	// 	{ id: newUser.id, email: newUser.email, isAdmin: newUser.isAdmin },
-	// 	jwtSecretKey,
-	// 	{
-	// 	  expiresIn: "1h",
-	// 	}
-	//   );
-
-	//   res.cookie("accessToken", token, {
-	// 	httpOnly: true,
-	// 	secure: process.env.NODE_ENV === "production",
-	// 	sameSite: "strict",
-	// 	path: "/",
-	// 	maxAge: 60 * 60 * 1000,
-	//   });
-
 	  // Don't return password
 	  const userObj = newUser.get({ plain: true });
 	  delete userObj.password;
@@ -67,7 +54,9 @@ register: async (req, res) => {
 
 	verifyEmail: async (req, res) => {
 		try {
+
 			const {token} = req.query;
+
 			if (!token) {
 				return res.status(400).json({ error: "Token is required" });
 			}
@@ -96,20 +85,26 @@ register: async (req, res) => {
 
 		resendVerification: async (req, res) => {
 		try {
+
 			const { email } = req.body;
+
 			if (!email) {
 				return res.status(400).json({ error: "Email is required" });
 			}
 			const user = await User.findOne({ where: { email } });
+
 			if (!user) {
 				return res.status(404).json({ error: "User not found" });
 			}
+
 			if (user.isVerified) {
 				return res.status(400).json({ error: "Account already verified" });
 			}
+
 			const newToken = verificationToken.generateVerificationToken();
 			await user.update({ verificationToken: newToken });
 			await sendVerificationEmail(user.email, user.firstname, newToken);
+
 			return res.status(200).json({ message: "Verification email resent" });
 		} catch (error) {
 			return res.status(500).json({ error: error.message });
@@ -133,16 +128,13 @@ register: async (req, res) => {
 			const resetToken = verificationToken.generateResetPasswordToken();
 			const resetExpires = new Date(Date.now() + 3600000); // 1 hour
 
-			console.log("[FORGOT PASSWORD] Génération du token:", { email, resetToken, resetExpires });
 
 			await user.update({
 				resetPasswordToken: resetToken,
 				resetPasswordExpires: resetExpires
 			});
 
-			console.log("[FORGOT PASSWORD] Token enregistré en BDD, envoi du mail...");
 			await sendPasswordResetEmail(email, resetToken);
-			console.log("[FORGOT PASSWORD] Appel à sendPasswordResetEmail terminé");
 
 			return res.status(200).json({ message: "If email exists, you will receive an email" });
 		} catch (error) {
@@ -153,7 +145,6 @@ register: async (req, res) => {
 	resetPassword: async (req, res) => {
 		try {
 			const { token, newPassword } = req.body;
-			console.log("[RESET PASSWORD] Requête reçue:", { token, newPassword });
 
 			if (!token || !newPassword) {
 				return res.status(400).json({ error: "Token and new password are required" });
@@ -167,20 +158,18 @@ register: async (req, res) => {
 					}
 				}
 			});
-			console.log("[RESET PASSWORD] Utilisateur trouvé:", user ? user.email : null);
 
 			if (!user) {
 				return res.status(404).json({ error: "Invalid or expired reset token" });
 			}
 
 			const hashedPassword = await argon2.hash(newPassword);
-			console.log("[RESET PASSWORD] Nouveau hash:", hashedPassword);
+
 			await user.update({
 				password: hashedPassword,
 				resetPasswordToken: null,
 				resetPasswordExpires: null
 			});
-			console.log("[RESET PASSWORD] Mot de passe mis à jour en BDD");
 
 			// send confirmation email
 			await sendPasswordChangeConfirmation(user.email, user.firstname);
@@ -193,11 +182,15 @@ register: async (req, res) => {
 
 	login: async (req, res) => {
 		try {
+
 			const { email, password } = req.body;
+
 			if (!email || !password) {
 				return res.status(400).json({ error: "email and password required" });
 			}
+
 			const user = await User.findOne({ where: { email } });
+
 			if (!user) {
 				return res.status(404).json({ error: "user not found" });
 			}
@@ -211,6 +204,7 @@ register: async (req, res) => {
 				return res.status(400).json({ error: "wrong password" });
 			}
 			const isPasswordValid = await argon2.verify(user.password, password);
+
 			if (!isPasswordValid) {
 				return res.status(401).json({ error: "password or email incorrect" });
 			}
@@ -235,11 +229,11 @@ register: async (req, res) => {
 				path: "/",
 				maxAge: 60 * 60 * 1000,
 			});
-			console.log("[LOGIN] User logged in");
 
 
 	  const userObj = user.get({ plain: true });
 	  delete userObj.password;
+
 	  return res.status(200).json({ user: userObj, token });
 		} catch (error) {
 			return res.status(500).json({ error: error.message });
@@ -247,25 +241,29 @@ register: async (req, res) => {
 	},
 
 	logout: async (req, res) => {
+
 		res.clearCookie("accessToken", {
 			httpOnly: true,
 			sameSite: "strict",
 		});
+
 		return res.status(200).json({ message: "Déconnexion réussie" });
 	},
 
 	me: async (req, res) => {
 		try {
-				console.log('[AUTH] me - req.user:', req.user);
 
 		// Fetch the full user from the database
 		const user = await User.findByPk(req.user.id, {
 			attributes: { exclude: ['password', 'verificationToken', 'resetPasswordToken', 'resetPasswordExpires'] }
 		});
+
 		if (!user) {
 			return res.status(404).json({ error: "User not found" });
 		}
+
 		res.json(user);
+
 		} catch (error) {
 		res.status(500).json({ error: "Error while retrieving profile" });
 		}
@@ -273,37 +271,41 @@ register: async (req, res) => {
 
 updateMe: async (req, res) => {
 	try {
-		console.log('[AUTH] updateMe - userId:', req.user.id);
-		console.log('[AUTH] updateMe - body:', req.body);
+
 		const user = await User.findByPk(req.user.id);
+
 		if (!user) {
 			return res.status(404).json({ error: 'User not found' });
 		}
+
 		await user.update(req.body);
-		console.log('[AUTH] updateMe - updated user:', user.get({ plain: true }));
+
 		res.json({ message: 'Profile updated successfully', user: user.get({ plain: true }) });
+
 	} catch (error) {
-		console.error('[AUTH] updateMe - error:', error);
+
 		res.status(500).json({ error: 'Error while updating profile' });
 	}
 },
 
 deleteMe: async (req, res) => {
 	try {
-		console.log('[AUTH] deleteMe - userId:', req.user.id);
+
 		const user = await User.findByPk(req.user.id);
+
 		if (!user) {
 			return res.status(404).json({ error: 'User not found' });
 		}
 		await user.destroy();
-		console.log('[AUTH] deleteMe - user deleted');
+
 		res.clearCookie("accessToken", {
 			httpOnly: true,
 			sameSite: "strict",
 		});
+
 		res.json({ message: 'Account deleted successfully' });
+
 	} catch (error) {
-		console.error('[AUTH] deleteMe - error:', error);
 		res.status(500).json({ error: 'Error while deleting account' });
 	}
 },

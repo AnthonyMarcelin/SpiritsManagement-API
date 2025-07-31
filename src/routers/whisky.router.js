@@ -1,10 +1,11 @@
 import express from "express";
+
 import whiskyController from "../controllers/whisky.controller.js";
 import verifyToken from "../middlewares/auth.middleware.js";
-import upload from "../utils/multerConfig.js";
 import validateBody from "../middlewares/validateBody.middleware.js";
-import whiskySchema, { whiskyUpdateSchema } from "../schemas/whisky.schema.js";
 import verifyEmailConfirmed from "../middlewares/verifiedEmail.middleware.js";
+import whiskySchema, { whiskyUpdateSchema } from "../schemas/whisky.schema.js";
+import upload from "../utils/multerConfig.js";
 
 const whiskyRouter = express.Router();
 

@@ -1,5 +1,6 @@
-import sequelize from "../database/client.js";
 import { DataTypes, Model } from "sequelize";
+
+import sequelize from "../database/client.js";
 
 export default class Supplier extends Model {}
 
