@@ -18,7 +18,7 @@ services:
       PG_URL: ${PG_URL_DOCKER}
       JWT_SECRET: ${JWT_SECRET}
     ports:
-      - "3000:3000"
+      - '3000:3000'
     depends_on:
       - db
     command: sh -c "npm run db:reset && npm run dev"

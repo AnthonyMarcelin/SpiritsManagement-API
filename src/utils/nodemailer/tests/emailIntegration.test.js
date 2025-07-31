@@ -1,6 +1,7 @@
-import request from 'supertest';
 import { expect } from 'chai';
 import sinon from 'sinon';
+import request from 'supertest';
+
 import app from '../../../../index.js';
 import User from '../../../models/user.model.js';
 import * as emailService from '../authEmailService.js';

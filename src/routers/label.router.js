@@ -1,7 +1,8 @@
-import verifyToken from "../middlewares/auth.middleware.js";
 import express from "express";
+
 import labelController from "../controllers/label.controller.js";
 import requireAdmin from "../middlewares/admin.middleware.js";
+import verifyToken from "../middlewares/auth.middleware.js";
 
 const labelRouter = express.Router();
 

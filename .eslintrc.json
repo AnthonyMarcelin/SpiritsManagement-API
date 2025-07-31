@@ -11,17 +11,25 @@
     "plugin:import/warnings",
     "plugin:import/typescript",
     "airbnb-base",
-    "prettier"
+    "plugin:prettier/recommended"
   ],
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": ["import"],
+  "plugins": ["import", "prettier"],
   "rules": {
+    "prettier/prettier": "warn",
     "no-console": "off",
     "consistent-return": "off",
-    "import/order": "off",
+    "import/order": [
+      "warn",
+      {
+        "groups": ["builtin", "external", "internal", ["parent", "sibling"], "index"],
+        "newlines-between": "always",
+        "alphabetize": { "order": "asc", "caseInsensitive": true }
+      }
+    ],
     "import/extensions": [
       "error",
       "ignorePackages",
@@ -31,13 +39,18 @@
     ],
     "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
     "no-underscore-dangle": "off",
-    "import/no-extraneous-dependencies": ["error", {
-      "devDependencies": [
-        "**/*.test.js",
-        "**/*.spec.js",
-        "**/tests/**"
-      ]
-    }]
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": ["**/*.test.js", "**/*.spec.js", "**/tests/**"]
+      }
+    ],
+    "padding-line-between-statements": [
+  "error",
+  { "blankLine": "always", "prev": "return", "next": "*" },
+  { "blankLine": "always", "prev": "*", "next": "function" },
+  { "blankLine": "always", "prev": "*", "next": "block-like" }
+]
   },
   "overrides": [
     {
@@ -55,9 +68,19 @@
       },
       "rules": {
         "no-unused-expressions": "off",
-        "no-unused-vars": ["warn", { "argsIgnorePattern": "^_|^res$|^consoleStub$" }]
+        "no-unused-vars": [
+          "warn",
+          { "argsIgnorePattern": "^_|^res$|^consoleStub$" }
+        ]
       }
     }
   ],
-  "ignorePatterns": ["node_modules/", "uploads/", "dist/", "*.config.js"]
+  "ignorePatterns": [
+    "node_modules/",
+    "uploads/",
+    "dist/",
+    "*.config.js",
+    "coverage/",
+    ".eslintrc.js"
+  ]
 }

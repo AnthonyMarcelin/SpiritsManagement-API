@@ -1,7 +1,8 @@
-import verifyToken from "../middlewares/auth.middleware.js";
 import express from "express";
+
 import peatLevelController from "../controllers/peatLevel.controller.js";
 import requireAdmin from "../middlewares/admin.middleware.js";
+import verifyToken from "../middlewares/auth.middleware.js";
 
 const peatLevelRouter = express.Router();
 
