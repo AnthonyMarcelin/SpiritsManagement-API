@@ -24,4 +24,7 @@ authRouter.get("/me", verifyToken, authController.me);
 authRouter.put("/me", verifyToken, authController.updateMe);
 authRouter.delete("/me", verifyToken, authController.deleteMe);
 
+// Changement de mot de passe pour utilisateur connecté
+authRouter.put("/change-password", verifyToken, authController.changePassword);
+
 export default authRouter;
