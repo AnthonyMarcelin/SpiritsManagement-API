@@ -310,6 +310,49 @@ deleteMe: async (req, res) => {
 	}
 },
 
+
+  changePassword: async (req, res) => {
+	try {
+	  const { currentPassword, newPassword } = req.body;
+
+	  if (!currentPassword || !newPassword) {
+		return res.status(400).json({ error: "Current and new password required" });
+	  }
+
+	  const user = await User.findByPk(req.user.id);
+
+	  if (!user) {
+		return res.status(404).json({ error: "User not found" });
+	  }
+
+	  // Vérifier le mot de passe actuel
+	  const isPasswordValid = await argon2.verify(user.password, currentPassword);
+
+	  if (!isPasswordValid) {
+		return res.status(401).json({ error: "Mot de passe actuel incorrect" });
+	  }
+
+	  // Vérifier les modalités du nouveau mot de passe
+	  if (
+		newPassword.length < 8 ||
+		!/[A-Z]/.test(newPassword) ||
+		!/[a-z]/.test(newPassword) ||
+		!/[0-9]/.test(newPassword) ||
+		!/[^A-Za-z0-9]/.test(newPassword)
+	  ) {
+		return res.status(422).json({ error: "Le nouveau mot de passe ne respecte pas les modalités (8 caractères, majuscule, minuscule, chiffre, caractère spécial)." });
+	  }
+
+	  const hashedPassword = await argon2.hash(newPassword);
+	  await user.update({ password: hashedPassword });
+	  // Optionnel : envoyer un email de confirmation
+	  await sendPasswordChangeConfirmation(user.email, user.firstname);
+	  return res.status(200).json({ message: "Mot de passe modifié avec succès" });
+	} catch (error) {
+	  return res.status(500).json({ error: error.message });
+	}
+  },
+
 };
 
 export default authController;

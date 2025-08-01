@@ -16,3 +16,11 @@ template mail
 clean code
 
 <!-- Migrations pour MeP -->
+
+Bloquer le register en cas d'erreur envoi mail verification (authEmailService)
+
+mettre des commentaires comme ceci en v2 :
+  /**
+   * Changement de mot de passe pour utilisateur connecté
+   * @route PUT /auth/change-password
+   */
