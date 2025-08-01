@@ -26,14 +26,15 @@ const allowedOrigins = [
   "https://spiritmanagement.up.railway.app"
 ]
 
-app.use(cors({
-  origin:
-  allowedOrigins,
-  credentials:true,
-  allowedHeaders: ["Content-Type", "Authorization"],
-  exposedHeaders: ["Authorization"]
-}));
+// app.use(cors({
+//   origin:
+//   allowedOrigins,
+//   credentials:true,
+//   allowedHeaders: ["Content-Type", "Authorization"],
+//   exposedHeaders: ["Authorization"]
+// }));
 
+app.use(cors());
 
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
