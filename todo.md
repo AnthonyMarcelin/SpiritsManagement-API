@@ -11,9 +11,9 @@ modif du mail dans mon profil pour v2
 
 <!-- virer les logs -->
 
-template mail
+<!-- template mail -->
 
-clean code
+<!-- clean code -->
 
 <!-- Migrations pour MeP -->
 
