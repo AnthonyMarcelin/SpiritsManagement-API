@@ -223,11 +223,12 @@ register: async (req, res) => {
 			);
 
 			res.cookie("accessToken", token, {
-				httpOnly:true,
+				httpOnly: true,
 				secure: process.env.NODE_ENV === "production",
-				sameSite: "strict",
+				sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
 				path: "/",
 				maxAge: 60 * 60 * 1000,
+				domain: process.env.NODE_ENV === "production" ? process.env.COOKIE_DOMAIN : undefined
 			});
 
 
@@ -244,7 +245,10 @@ register: async (req, res) => {
 
 		res.clearCookie("accessToken", {
 			httpOnly: true,
-			sameSite: "strict",
+			secure: process.env.NODE_ENV === "production",
+			sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+			path: "/",
+			domain: process.env.NODE_ENV === "production" ? process.env.COOKIE_DOMAIN : undefined
 		});
 
 		return res.status(200).json({ message: "Déconnexion réussie" });
@@ -300,7 +304,10 @@ deleteMe: async (req, res) => {
 
 		res.clearCookie("accessToken", {
 			httpOnly: true,
-			sameSite: "strict",
+			secure: process.env.NODE_ENV === "production",
+			sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+			path: "/",
+			domain: process.env.NODE_ENV === "production" ? process.env.COOKIE_DOMAIN : undefined
 		});
 
 		res.json({ message: 'Account deleted successfully' });
